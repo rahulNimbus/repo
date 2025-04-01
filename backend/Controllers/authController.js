@@ -3,7 +3,7 @@ const {
   handleMulterErrors,
 } = require("../middlewares/multers/avatarMulter");
 const { genToken } = require("../middlewares/handleToken");
-const User = require("../modles/user/userSchema");
+const User = require("../models/user/userSchema");
 const bcrypt = require("bcrypt");
 const { default: mongoose } = require("mongoose");
 

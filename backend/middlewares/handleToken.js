@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("../modles/user/userSchema");
+const User = require("../models/user/userSchema");
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 const genToken = (user) => {

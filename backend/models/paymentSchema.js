@@ -6,7 +6,7 @@ const paymentSchema = new Schema({
   title: String,
   description: { type: String },
   amount: { type: Number },
-  user: { type: Schema.Types.ObjectId, ref: "Users" },
+  user: { name: String, email: String, phone: String },
   createdAt: { type: Date, default: Date.now },
   customer: { type: String },
   status: { type: Number, default: 0 },

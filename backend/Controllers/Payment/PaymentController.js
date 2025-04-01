@@ -4,7 +4,7 @@ const {
 const { paymentMulter } = require("../../middlewares/multers/paymentMulter");
 const { checkDigit } = require("../../utils/CommonFunctions");
 const { requiredFields } = require("../../utils/requiredFields");
-const PaymentSchema = require("../../modles/paymentSchema");
+const PaymentSchema = require("../../models/paymentSchema");
 const { default: mongoose } = require("mongoose");
 
 exports.createPayment = [
@@ -52,7 +52,7 @@ exports.createPayment = [
         payment,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       res.status(500).send("Internal Server Error");
     }
   },
@@ -80,14 +80,14 @@ exports.getPayment = async (req, res) => {
       payment: Array.isArray(payment) ? payment : [payment],
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).send("Internal Server Error");
   }
 };
 
 exports.updatePayment = async (req, res) => {
   try {
-    let id = req.query.id;
+    let id = req.body.id;
     let payment;
 
     if (!id) {
@@ -103,7 +103,9 @@ exports.updatePayment = async (req, res) => {
       return res.status(404).json({ message: "Payment not found" });
     }
 
-    const { status } = req.query;
+    const { status, name, email, phone } = req.body;
+
+    if (!requiredFields(req, res, ["status", "name", "email", "phone"])) return;
 
     if (!status || (status !== "0" && status !== "1")) {
       return res.status(400).json({
@@ -112,6 +114,11 @@ exports.updatePayment = async (req, res) => {
       });
     }
 
+    payment.user = {
+      name,
+      email,
+      phone,
+    };
     payment.status = status;
     payment.save();
 
@@ -120,7 +127,7 @@ exports.updatePayment = async (req, res) => {
       payment: Array.isArray(payment) ? payment : [payment],
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).send("Internal Server Error");
   }
 };
