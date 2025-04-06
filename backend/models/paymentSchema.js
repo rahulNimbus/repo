@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const paymentSchema = new Schema({
-  image: String,
+  media: [String],
   title: String,
   description: { type: String },
   amount: { type: Number },

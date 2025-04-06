@@ -116,14 +116,20 @@ exports.login = [
 exports.getData = [
   async (req, res) => {
     try {
-      const userId = req.params.id;
+      // const userId = req.params.id;
+      // if (!userId) {
+      //   return res.status(400).json({ message: "User id is required" });
+      // }
+      // if (!mongoose.Types.ObjectId.isValid(userId)) {
+      //   return res.status(400).json({ message: "Invalid user id" });
+      // }
+
+      const userId = req.user.id;
       if (!userId) {
         return res.status(400).json({ message: "User id is required" });
       }
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ message: "Invalid user id" });
-      }
-      const user = await User.findById(userId).select("-password");
+
+      const user = await User.findById(req.user.id).select("-password");
       if (!user) {
         return res.status(400).json({ message: "User not found" });
       }

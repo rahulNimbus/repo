@@ -8,7 +8,7 @@ const PaymentSchema = require("../../models/paymentSchema");
 const { default: mongoose } = require("mongoose");
 
 exports.createPayment = [
-  paymentMulter.single("image"),
+  paymentMulter.array("media", 5),
   handleMulterErrors,
   async (req, res) => {
     try {
@@ -23,8 +23,10 @@ exports.createPayment = [
         return;
       }
 
-      if (!req.file) {
-        return res.status(400).json({ message: "Please upload a file" });
+      if (!req.files || req.files.length === 0) {
+        return res
+          .status(400)
+          .json({ message: "Please upload at least one file" });
       }
 
       if (!checkDigit({ number: req.body.amount, decimalAllowed: true })) {
@@ -40,11 +42,23 @@ exports.createPayment = [
         });
       }
 
+      if (!req.files?.map((file) => file.path).length) {
+        return res
+          .status(400)
+          .json({ message: "Please upload at least one file" });
+      }
+
+      if (req.files?.map((file) => file.path).length > 5) {
+        return res
+          .status(400)
+          .json({ message: "Please upload at most 5 files" });
+      }
+
       const payment = new PaymentSchema({
         ...req.body,
         amount: Number(req.body.amount),
         status: Number(status) || 0,
-        image: req?.file?.path,
+        media: req?.files?.map((file) => file.path) || [],
       });
       await payment.save();
       res.json({
