@@ -160,12 +160,27 @@ exports.update = [
       if (!user) {
         return res.status(400).json({ message: "User not found" });
       }
-      const { username, bio } = req.body;
+      const { username, bio, password, confirmPassword, email } = req.body;
       if (username) {
         user.username = username;
       }
       if (bio) {
         user.bio = bio;
+      }
+
+      if (password && confirmPassword && password === confirmPassword) {
+        user.password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+      }
+
+      if (email) {
+        const existingUser = await User.findOne({ email });
+        if (
+          existingUser &&
+          existingUser._id.toString() !== user._id.toString()
+        ) {
+          return res.status(400).json({ message: "Email already registered" });
+        }
+        user.email = email;
       }
 
       if (req.file) {
