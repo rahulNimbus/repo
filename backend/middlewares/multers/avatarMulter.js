@@ -20,7 +20,6 @@ const avatarMulter = multer({
         fs.rmSync(filePath, { recursive: true });
       }
       fs.mkdirSync(filePath, { recursive: true });
-      console.log(file);
       cb(
         null,
         `${req?.body?.email || req?.user?.email || "file"}/${
