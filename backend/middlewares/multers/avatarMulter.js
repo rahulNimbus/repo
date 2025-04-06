@@ -13,25 +13,29 @@ const avatarMulter = multer({
     filename: (req, file, cb) => {
       const filePath = path.join(
         "uploads/avatars",
-        req.body.email || req.user.email
+        req?.body?.email || req?.user?.email || "file"
       );
 
       if (fs.existsSync(filePath)) {
         fs.rmSync(filePath, { recursive: true });
       }
       fs.mkdirSync(filePath, { recursive: true });
-
+      console.log(file);
       cb(
         null,
-        `${req.body.email || req.user.email}/${
-          (req.body.username || req.user.username) +
+        `${req?.body?.email || req?.user?.email || "file"}/${
+          (req?.body?.username || req?.user?.username || "file") +
           path.extname(file.originalname)
         }`
       );
     },
   }),
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+    if (
+      file.mimetype === "image/jpeg" ||
+      file.mimetype === "image/jpg" ||
+      file.mimetype === "image/png"
+    ) {
       cb(null, true);
     } else {
       cb(

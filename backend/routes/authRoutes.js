@@ -13,4 +13,4 @@ router.post("/login", login);
 router.get("/getData/:id", getData);
 router.put("/update", verifyToken, update);
 
-module.exports = router;
+module.exports = router; 
