@@ -1,12 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { Link, useNavigate } from "react-router-dom";
 import Icon from '@mdi/react';
 import { mdiForumOutline } from '@mdi/js';
+import axios from "axios";
 
 function Navbar() {
   const navigate = useNavigate();
+  const [userData, setUserData] = useState({});
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8180/api/auth/getData`,
+          { withCredentials: true }
+        );
+        console.log("res",response)
+        setUserData(response.data.user);
+      } catch (err) {
+        // setError("Failed to fetch user data. Please try again later.");
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
   return (
 
 
@@ -23,7 +43,7 @@ function Navbar() {
           />
         </div>
         <div className="text-center"><Icon path={mdiForumOutline} size={1} /><br />Live Chat Support</div>
-        <div className="text-center">Welcome Mukesh Jaiswal</div>
+        <div className="text-center">Welcome {userData.username || "Undefined"}</div>
         {/* <div className="navbar-nav d-flex">
           <span className="nav-item nav-link">Live Chat Support</span>
           <span className="nav-item nav-link">Welcome Mukesh Jaiswal</span>

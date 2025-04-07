@@ -15,7 +15,7 @@ function Profile() {
   const fetchProfile = async () => {
     try {
       const response = await axios.get(
-       `http://localhost:8180/api/auth/getData/${localStorage.getItem("user")}`,
+        `http://localhost:8180/api/auth/getData`,
         { withCredentials: true }
       );
       setUserData(response.data.user);
@@ -27,6 +27,7 @@ function Profile() {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -38,6 +39,12 @@ function Profile() {
     }
     if (formValues.bio && formValues.bio.length > 150) {
       errors.bio = "Bio cannot exceed 150 characters.";
+    }
+    if (
+      !formValues.email ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formValues.email)
+    ) {
+      errors.email = "Please enter a valid email address.";
     }
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -74,11 +81,12 @@ function Profile() {
       const formData = new FormData();
       formData.append("username", formValues.username);
       formData.append("bio", formValues.bio || "");
+      formData.append("email", formValues.email);
       if (avatarFile) {
         formData.append("avatar", avatarFile);
       }
 
-      const response = await axios.put(
+      await axios.put(
         "http://localhost:8180/api/auth/update",
         formData,
         {
@@ -89,7 +97,6 @@ function Profile() {
         }
       );
 
-      //   setUserData(response.data.updatedUser);
       await fetchProfile();
       setEditing(false);
       setAvatarFile(null);
@@ -99,24 +106,24 @@ function Profile() {
     }
   };
 
-  if (loading) return <p>Loading profile...</p>;
-  if (error) return <p className="text-danger">{error}</p>;
+  // if (loading) return <p className="text-light">Loading profile...</p>;
+  // if (error) return <p className="text-danger">{error}</p>;
 
   return (
     <motion.div
-      className="container my-5"
+      // className="container my-5 text-light"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
     >
-      <div className="card shadow-lg border-0 rounded-4 p-4">
+      <div className="bg-dark text-white min-vh-100 p-4">
         {/* Avatar */}
         <div className="text-center mb-4">
           <div className="position-relative d-inline-block">
             <img
               src={avatarPreview || "https://via.placeholder.com/150"}
               alt="avatar"
-              className="rounded-circle border"
+              className="rounded-circle border border-light"
               style={{
                 width: "150px",
                 height: "150px",
@@ -125,10 +132,10 @@ function Profile() {
             />
             {editing && (
               <label
-                className="btn btn-sm btn-dark position-absolute bottom-0 end-0 rounded-circle"
+                className="btn btn-sm btn-light position-absolute bottom-0 end-0 rounded-circle"
                 style={{ padding: "8px 10px", cursor: "pointer" }}
               >
-                <i className="fas fa-camera"></i>
+                <i className="fas fa-camera text-dark"></i>
                 <input
                   type="file"
                   accept="image/*"
@@ -153,7 +160,7 @@ function Profile() {
                   name="username"
                   value={formValues.username || ""}
                   onChange={handleChange}
-                  className="form-control shadow-sm"
+                  className="form-control bg-dark text-light border-secondary shadow-sm"
                 />
                 {formErrors.username && (
                   <small className="text-danger">{formErrors.username}</small>
@@ -166,7 +173,22 @@ function Profile() {
 
           <div className="col-md-6 mb-3">
             <label className="form-label">Email</label>
-            <div className="fw-bold">{userData.email}</div>
+            {editing ? (
+              <>
+                <input
+                  type="email"
+                  name="email"
+                  value={formValues.email || ""}
+                  onChange={handleChange}
+                  className="form-control bg-dark text-light border-secondary shadow-sm"
+                />
+                {formErrors.email && (
+                  <small className="text-danger">{formErrors.email}</small>
+                )}
+              </>
+            ) : (
+              <div className="fw-bold">{userData.email}</div>
+            )}
           </div>
 
           <div className="col-12 mb-3">
@@ -177,7 +199,7 @@ function Profile() {
                   name="bio"
                   value={formValues.bio || ""}
                   onChange={handleChange}
-                  className="form-control shadow-sm"
+                  className="form-control bg-dark text-light border-secondary shadow-sm"
                   rows="3"
                 />
                 {formErrors.bio && (
@@ -201,7 +223,7 @@ function Profile() {
                 Save
               </button>
               <button
-                className="btn btn-outline-secondary px-4"
+                className="btn btn-outline-light px-4"
                 onClick={() => {
                   setEditing(false);
                   setFormValues(userData);
