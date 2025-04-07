@@ -6,6 +6,7 @@ const { genToken } = require("../middlewares/handleToken");
 const User = require("../models/user/userSchema");
 const bcrypt = require("bcrypt");
 const { default: mongoose } = require("mongoose");
+const { capitalize } = require("../utils/CommonFunctions");
 
 const cookieOptions = {
   expires: new Date(Date.now() + 3600000),
@@ -73,25 +74,26 @@ exports.login = [
   async (req, res) => {
     try {
       const { email, password } = req.body;
-
       const requiredFields = ["email", "password"];
 
       for (const field of requiredFields) {
         if (!req.body[field]) {
-          return res.status(400).json({ message: `${field} is required` });
+          return res
+            .status(400)
+            .json({ message: `${capitalize(field)} is required` });
         }
       }
 
       const user = await User.findOne({ email });
 
       if (!user) {
-        return res.status(400).json({ message: "Invalid email or password" });
+        return res.status(401).json({ message: "Invalid email or password" });
       }
 
       const isMatch = bcrypt.compareSync(password, user.password);
 
       if (!isMatch) {
-        return res.status(400).json({ message: "Invalid email or password" });
+        return res.status(401).json({ message: "Invalid email or password" });
       }
 
       const token = genToken(user);
@@ -114,14 +116,20 @@ exports.login = [
 exports.getData = [
   async (req, res) => {
     try {
-      const userId = req.params.id;
+      // const userId = req.params.id;
+      // if (!userId) {
+      //   return res.status(400).json({ message: "User id is required" });
+      // }
+      // if (!mongoose.Types.ObjectId.isValid(userId)) {
+      //   return res.status(400).json({ message: "Invalid user id" });
+      // }
+
+      const userId = req.user.id;
       if (!userId) {
         return res.status(400).json({ message: "User id is required" });
       }
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ message: "Invalid user id" });
-      }
-      const user = await User.findById(userId).select("-password");
+
+      const user = await User.findById(req.user.id).select("-password");
       if (!user) {
         return res.status(400).json({ message: "User not found" });
       }
@@ -158,12 +166,27 @@ exports.update = [
       if (!user) {
         return res.status(400).json({ message: "User not found" });
       }
-      const { username, bio } = req.body;
+      const { username, bio, password, confirmPassword, email } = req.body;
       if (username) {
         user.username = username;
       }
       if (bio) {
         user.bio = bio;
+      }
+
+      if (password && confirmPassword && password === confirmPassword) {
+        user.password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+      }
+
+      if (email) {
+        const existingUser = await User.findOne({ email });
+        if (
+          existingUser &&
+          existingUser._id.toString() !== user._id.toString()
+        ) {
+          return res.status(400).json({ message: "Email already registered" });
+        }
+        user.email = email;
       }
 
       if (req.file) {

@@ -19,3 +19,8 @@ exports.checkDigit = ({ number, decimalAllowed = false }) => {
     : /^(0|[1-9]\d*)$/;
   return regex.test(numStr);
 };
+
+exports.capitalize = (text) => {
+  if (!text) return "";
+  return text[0].toUpperCase() + text.slice(1).toLowerCase();
+};

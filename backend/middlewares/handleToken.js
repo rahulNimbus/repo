@@ -19,7 +19,7 @@ const genToken = (user) => {
       }
     );
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return null;
   }
 };
@@ -45,7 +45,7 @@ const verifyToken = async (req, res, next) => {
 
     next();
   } catch (err) {
-    console.log("JWT Verification Error:", err.message);
+    console.error("JWT Verification Error:", err.message);
     res.clearCookie("token");
     return res.status(401).json({ message: "Invalid or expired token" });
   }

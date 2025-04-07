@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3000", "http://localhost:62478"],
     credentials: true,
   })
 );
@@ -21,7 +21,7 @@ mongoose
     console.log("Connected to MongoDB");
   })
   .catch((error) => {
-    console.log(error);
+    console.error(error);
   });
 
 const authRoutes = require("./routes/authRoutes");
@@ -37,6 +37,6 @@ app.use("*", (req, res) => {
 });
 
 const PORT = process.env.PORT || 8180;
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${PORT}`);
 });

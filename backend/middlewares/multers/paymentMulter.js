@@ -5,39 +5,34 @@ const path = require("path");
 const paymentMulter = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      const uploadDir = "uploads/payment";
+      const uploadDir = "uploads/payment/" + req.user.email;
       if (!fs.existsSync(uploadDir))
         fs.mkdirSync(uploadDir, { recursive: true });
       cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
-      const filePath = path.join(
-        "uploads/payment",
-        req.body.email || req.user.email
-      );
-
-      if (fs.existsSync(filePath)) {
-        fs.rmSync(filePath, { recursive: true });
-      }
-      fs.mkdirSync(filePath, { recursive: true });
-
       cb(
         null,
-        `${req.body.email || req.user.email}/${
-          (req.body.username || req.user.username) +
+        `${
+          Math.random().toString(36).substring(2, 15) +
           path.extname(file.originalname)
         }`
       );
     },
   }),
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+    if (
+      file.mimetype === "image/jpeg" ||
+      file.mimetype === "image/png" ||
+      file.mimetype === "video/mp4" ||
+      file.mimetype === "application/pdf"
+    ) {
       cb(null, true);
     } else {
       cb(
         new multer.MulterError(
           "LIMIT_UNEXPECTED_FILE",
-          "Only PNG and JPEG files are allowed"
+          "Only PNG, JPEG,MP4 and PDF files are allowed"
         ),
         false
       );
@@ -56,7 +51,7 @@ const handleMulterErrors = (err, req, res, next) => {
     if (err.code === "LIMIT_UNEXPECTED_FILE") {
       return res
         .status(400)
-        .json({ error: "Only PNG and JPEG files are allowed" });
+        .json({ error: "Only PNG, JPEG,MP4 and PDF files are allowed" });
     }
   }
   next(err);

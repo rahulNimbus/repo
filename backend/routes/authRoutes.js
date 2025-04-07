@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
-router.get("/getData/:id", getData);
+router.get("/getData", verifyToken,getData);
 router.put("/update", verifyToken, update);
 
-module.exports = router;
+module.exports = router; 
