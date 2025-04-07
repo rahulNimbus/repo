@@ -2,53 +2,32 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { Link, useNavigate } from "react-router-dom";
+import Icon from '@mdi/react';
+import { mdiForumOutline } from '@mdi/js';
 
 function Navbar() {
   const navigate = useNavigate();
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light mb-4 shadow-sm">
-      <div className="container">
-        <div className="navbar-brand" style={{cursor: "pointer"}} onClick={()=>navigate("/")} >
-          FoodieLife
+
+
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark text-white position-fixed top-0 end-0 start-0" style={{ zIndex: 1500 , maxHeight: '56px' , overflow: 'hidden' }}>
+      <div className="d-flex align-items-center justify-content-evenly w-100">
+
+        <h2>Dashboard</h2>
+        <div className="flex-grow-5">
+          <input
+            type="text"
+            className="form-control bg-secondary text-white border-0 rounded-pill"
+            placeholder="🔍Portfolio, Savings, etc ..."
+            style={{ width: '250px' }}
+          />
         </div>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto me-3">
-            <li className="nav-item">
-              <Link className="nav-link" to="/">
-                Home
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/auth">
-                Login/Signup
-              </Link>
-            </li>
-            <li className="nav-item d-flex align-items-center ms-1">
-              <form className="d-flex px-0 flex-row" role="search">
-                <input
-                  className="form-control form-control-sm me-2"
-                  type="search"
-                  placeholder="Search recipes..."
-                  aria-label="Search"
-                />
-                <button
-                  className="btn btn-outline-primary btn-sm"
-                  type="submit"
-                >
-                  Search
-                </button>
-              </form>
-            </li>
-          </ul>
-        </div>
+        <div className="text-center"><Icon path={mdiForumOutline} size={1} /><br />Live Chat Support</div>
+        <div className="text-center">Welcome Mukesh Jaiswal</div>
+        {/* <div className="navbar-nav d-flex">
+          <span className="nav-item nav-link">Live Chat Support</span>
+          <span className="nav-item nav-link">Welcome Mukesh Jaiswal</span>
+        </div> */}
       </div>
     </nav>
   );

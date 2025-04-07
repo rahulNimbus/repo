@@ -398,3 +398,53 @@ form.sign-in-form {
     left: 50%;
   }
 }
+
+
+
+
+
+.sidebar {
+  width: 200px;
+  height: 100vh;
+  /* background: #343a40; */
+  color: white;
+  transition: width 0.3s ease-in-out;
+  /* position: fixed;
+  left: 0;
+  top: 0;
+  padding: 20px; */
+}
+
+.sidebar.closed {
+  width: 50px;
+  overflow: hidden;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 20px 0;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+
+.dark-input::placeholder,
+.dark-textarea::placeholder {
+    color: #aaaaaa;
+    opacity: 1;
+}
