@@ -69,10 +69,28 @@ exports.getPayment = async (req, res) => {
       return res.status(404).json({ message: "Payment not found" });
     }
 
-    res.json({
+    const payload = {
       count: payment.length,
       payment: payment,
-    });
+    };
+    if (!id) {
+      const totalSales = payment
+        .map((p) => p.customer.filter((c) => c.status === 1).length)
+        .reduce((acc, curr) => acc + curr, 0);
+
+      const totalRevenue = payment
+        .map((p) => p.customer.filter((c) => c.status === 1).length * p.amount)
+        .reduce((acc, curr) => acc + curr, 0);
+
+      const notPaidCustomers = payment
+        .map((p) => p.customer.filter((c) => c.status === 0).length)
+        .reduce((acc, curr) => acc + curr, 0);
+
+      payload.totalSales = totalSales;
+      payload.totalRevenue = totalRevenue;
+      payload.notPaidCustomers = notPaidCustomers;
+    }
+    res.json(payload);
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
