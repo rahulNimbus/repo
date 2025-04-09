@@ -10,6 +10,16 @@ function LoginRegister() {
   const [formValues, setFormValues] = useState({});
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
 
   const validateField = (name, value, values) => {
     let error = "";
@@ -92,10 +102,10 @@ function LoginRegister() {
         withCredentials: true,
       });
 
-      console.log(response)
+      console.log(response);
 
       if (response.status === 200) {
-        localStorage.setItem("user",response.data.user.id)
+        localStorage.setItem("user", response.data.user.id);
         setSuccessMessage(response.data.message || `${type} successful!`);
         navigate("/");
         setFormValues({});
@@ -114,7 +124,6 @@ function LoginRegister() {
 
   return (
     <>
-      
       <div className={`containerS ${signUpMode ? "sign-up-mode" : ""}`}>
         <div className="forms-container">
           <div className="signin-signup">
@@ -154,12 +163,23 @@ function LoginRegister() {
                   <i className="fas fa-lock me-2"></i>
                   <input
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     className="form-control"
                     placeholder="Password"
                     value={formValues.password || ""}
                     onChange={handleChange}
                   />
+                  <i
+                    className={`fas ${
+                      showPassword ? "fa-eye-slash" : "fa-eye"
+                    } position-absolute`}
+                    onClick={togglePasswordVisibility}
+                    style={{
+                      right: "15px",
+                      cursor: "pointer",
+                      color: "#aaa",
+                    }}
+                  ></i>
                 </div>
                 {errors.password && (
                   <small className="text-danger">{errors.password}</small>
@@ -235,12 +255,23 @@ function LoginRegister() {
                   <i className="fas fa-lock me-2"></i>
                   <input
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     className="form-control"
                     placeholder="Password"
                     value={formValues.password || ""}
                     onChange={handleChange}
                   />
+                  <i
+                    className={`fas ${
+                      showPassword ? "fa-eye-slash" : "fa-eye"
+                    } position-absolute`}
+                    onClick={togglePasswordVisibility}
+                    style={{
+                      right: "15px",
+                      cursor: "pointer",
+                      color: "#aaa",
+                    }}
+                  ></i>
                 </div>
                 {errors.password && (
                   <small className="text-danger">{errors.password}</small>
@@ -255,12 +286,23 @@ function LoginRegister() {
                   <i className="fas fa-lock me-2"></i>
                   <input
                     name="confirmPassword"
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     className="form-control"
                     placeholder="Confirm Password"
                     value={formValues.confirmPassword || ""}
                     onChange={handleChange}
                   />
+                  <i
+                    className={`fas ${
+                      showConfirmPassword ? "fa-eye-slash" : "fa-eye"
+                    } position-absolute`}
+                    onClick={toggleConfirmPasswordVisibility}
+                    style={{
+                      right: "15px",
+                      cursor: "pointer",
+                      color: "#aaa",
+                    }}
+                  ></i>
                 </div>
                 {errors.confirmPassword && (
                   <small className="text-danger">
@@ -296,6 +338,8 @@ function LoginRegister() {
                   setSignUpMode(true);
                   setErrors({});
                   setSuccessMessage("");
+                  setShowPassword(false);
+                  setShowConfirmPassword(false);
                 }}
               >
                 Sign up
@@ -313,6 +357,8 @@ function LoginRegister() {
                   setSignUpMode(false);
                   setErrors({});
                   setSuccessMessage("");
+                  setShowPassword(false);
+                  setShowConfirmPassword(false);
                 }}
               >
                 Sign in

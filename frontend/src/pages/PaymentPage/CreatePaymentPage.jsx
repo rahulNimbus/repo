@@ -4,6 +4,7 @@ import { mdiFolderArrowUpOutline } from '@mdi/js';
 
 const CreatePaymentPage = () => {
     const [title, setTitle] = useState("");
+    const [amount, setAmount] = useState("");
     const [description, setDescription] = useState("");
     const [media, setMedia] = useState([]);
     const [mediaPreview, setMediaPreview] = useState([]);
@@ -37,17 +38,32 @@ const CreatePaymentPage = () => {
         setMediaPreview(prev => prev.filter((_, i) => i !== index));
     };
 
+    const [errors, setErrors] = useState({});
+    const validateForm = () => {
+        const newErrors = {};
+        if (!title.trim()) newErrors.title = "Title is required.";
+        if (title.length > 25) newErrors.title = "Title cannot exceed 25 characters.";
+        if (!amount || isNaN(amount) || Number(amount) <= 0) {
+            newErrors.amount = "Enter a valid positive number.";
+        }
+        if (!description.trim()) newErrors.description = "Description is required.";
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!validateForm()) return;
 
         const formData = new FormData();
         formData.append("title", title);
+        formData.append("amount", amount);
         formData.append("description", description);
         media.forEach((file, idx) => formData.append(`media_${idx}`, file));
 
         console.log("Form submitted", {
             title,
+            amount,
             description,
             media,
         });
@@ -92,7 +108,7 @@ const CreatePaymentPage = () => {
     };
 
     return (
-        <div className="bg-dark text-white p-5 ">
+        <div className="bg-dark text-white p-5  min-vh-100">
             <div className="row h-100">
                 {/* Form Side */}
                 <div className="col-md-6 border-end border-secondary">
@@ -105,10 +121,12 @@ const CreatePaymentPage = () => {
                                 className="form-control pe-5"
                                 style={{ backgroundColor: '#1e1e1e', color: '#ffffff', borderColor: '#333333' }}
                                 value={title}
-                                onChange={(e) => setTitle(e.target.value)}
+                                onChange={(e) => {
+                                    setTitle(e.target.value)
+                                    setErrors((prev) => ({...prev, title: ""}))
+                                }}
                                 placeholder="Enter page title"
                                 maxLength={25}
-                                required
                             />
                             <small
                                 className="position-absolute"
@@ -116,6 +134,24 @@ const CreatePaymentPage = () => {
                             >
                                 {title.length}/25
                             </small>
+                            {errors.title && <div className="invalid-feedback d-block">{errors.title}</div>}
+                        </div>
+
+                        <div className="mb-3 position-relative">
+                            <label className="form-label" style={{ color: '#bbbbbb' }}>Amount</label>
+                            <input
+                                type="text"
+                                className="form-control pe-5 text-white"
+                                style={{ backgroundColor: '#1e1e1e', borderColor: '#333333' }}
+                                value={amount}
+                                onChange={(e) => {
+                                    setAmount(e.target.value)
+                                    setErrors((prev) => ({...prev, amount: ""}))
+                                }}
+                                placeholder="Enter amount"
+                            />
+                            {errors.amount && <div className="invalid-feedback d-block">{errors.amount}</div>}
+
                         </div>
 
                         <div className="mb-3">
@@ -125,10 +161,13 @@ const CreatePaymentPage = () => {
                                 style={{ backgroundColor: '#1e1e1e', color: '#ffffff', borderColor: '#333333' }}
                                 rows="3"
                                 value={description}
-                                onChange={(e) => setDescription(e.target.value)}
+                                onChange={(e) => {setDescription(e.target.value)
+                                    setErrors((prev) => ({...prev, description: ""}))
+                                }}
                                 placeholder="Enter description"
-                                required
                             />
+                            {errors.description && <div className="invalid-feedback d-block">{errors.description}</div>}
+
                         </div>
 
                         {/* Upload Box */}
@@ -176,6 +215,7 @@ const CreatePaymentPage = () => {
                                         left: 0,
                                     }}
                                 />
+
                             </div>
                         </div>
 
@@ -198,6 +238,7 @@ const CreatePaymentPage = () => {
                     <div className="border border-secondary p-3 rounded" style={{ backgroundColor: '#1e1e1e', color: '#e0e0e0' }}>
                         <h5>{title || "Your Payment Page Title Here"}</h5>
                         <small style={{ color: '#bbbbbb' }}>ABOUT THE PAGE</small>
+                        <p>Amount: {amount || "--"}</p>
                         <p>{description || "Description Preview will appear here."}</p>
 
                         {mediaPreview.length > 0 && (

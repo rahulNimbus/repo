@@ -16,7 +16,6 @@ function Navbar() {
           `http://localhost:8180/api/auth/getData`,
           { withCredentials: true }
         );
-        console.log("res",response)
         setUserData(response.data.user);
       } catch (err) {
         // setError("Failed to fetch user data. Please try again later.");
@@ -27,6 +26,8 @@ function Navbar() {
 
     fetchUserData();
   }, []);
+
+  
   return (
 
 
@@ -39,10 +40,10 @@ function Navbar() {
             type="text"
             className="form-control bg-secondary text-white border-0 rounded-pill"
             placeholder="🔍Portfolio, Savings, etc ..."
-            style={{ width: '250px' }}
+            style={{ width: '350px' }}
           />
         </div>
-        <div className="text-center"><Icon path={mdiForumOutline} size={1} /><br />Live Chat Support</div>
+        {/* <div className="text-center"><Icon path={mdiForumOutline} size={1} /><br />Live Chat Support</div> */}
         <div className="text-center">Welcome {userData.username || "Undefined"}</div>
         {/* <div className="navbar-nav d-flex">
           <span className="nav-item nav-link">Live Chat Support</span>

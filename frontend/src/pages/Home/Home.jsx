@@ -11,24 +11,24 @@ function Home() {
 
   console.log("local", localStorage.getItem("user"))
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8180/api/auth/getData`,
-          { withCredentials: true }
-        );
-        console.log("res",response)
-        setUserData(response.data.user);
-      } catch (err) {
-        setError("Failed to fetch user data. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `http://localhost:8180/api/auth/getData`,
+  //         { withCredentials: true }
+  //       );
+  //       console.log("res",response)
+  //       setUserData(response.data.user);
+  //     } catch (err) {
+  //       setError("Failed to fetch user data. Please try again later.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchUserData();
-  }, []);
+  //   fetchUserData();
+  // }, []);
 
   // if (loading) return <p>Loading user data...</p>;
   // if (error) return <p className="text-danger text-center ">{error}</p>;
