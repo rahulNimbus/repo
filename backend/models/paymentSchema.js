@@ -6,10 +6,18 @@ const paymentSchema = new Schema({
   title: String,
   description: { type: String },
   amount: { type: Number },
-  user: { name: String, email: String, phone: String },
   createdAt: { type: Date, default: Date.now },
-  customer: { type: String },
-  status: { type: Number, default: 0 },
+  customer: [
+    {
+      name: String,
+      email: String,
+      phone: String,
+      status: { type: Number, default: 0 },
+    },
+  ],
+  enabled: { type: Boolean, default: true },
+  user: { type: Schema.Types.ObjectId, ref: "Users" },
 });
+
 const User = mongoose.model("Payments", paymentSchema);
 module.exports = User;

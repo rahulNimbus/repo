@@ -6,7 +6,7 @@ const { genToken } = require("../middlewares/handleToken");
 const User = require("../models/user/userSchema");
 const bcrypt = require("bcrypt");
 const { default: mongoose } = require("mongoose");
-const { capitalize } = require("../utils/CommonFunctions");
+const { capitalize, checkEmail } = require("../utils/CommonFunctions");
 
 const cookieOptions = {
   expires: new Date(Date.now() + 3600000),
@@ -35,6 +35,8 @@ exports.register = [
       // if (!req.file) {
       //   return res.status(400).json({ message: "Please upload an avatar" });
       // }
+      if (!checkEmail(email))
+        return res.status(400).json({ message: "Invalid email" });
 
       const user = await User.findOne({ email });
 
@@ -174,9 +176,23 @@ exports.update = [
         user.bio = bio;
       }
 
-      if (password && confirmPassword && password === confirmPassword) {
-        user.password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+      if (password) {
+        if (!confirmPassword) {
+          return res
+            .status(400)
+            .json({ message: "Confirm Password is also required." });
+        }
+        if (password !== confirmPassword) {
+          return res.status(400).json({ message: "Passwords do not match" });
+        }
+
+        if (confirmPassword && password === confirmPassword) {
+          user.password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+        }
       }
+
+      if (!checkEmail(email))
+        return res.status(400).json({ message: "Invalid email" });
 
       if (email) {
         const existingUser = await User.findOne({ email });
@@ -186,6 +202,7 @@ exports.update = [
         ) {
           return res.status(400).json({ message: "Email already registered" });
         }
+
         user.email = email;
       }
 
