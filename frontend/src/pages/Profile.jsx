@@ -111,7 +111,7 @@ function Profile() {
 
   return (
     <motion.div
-      // className="container my-5 text-light"
+    className="bg-dark"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
@@ -146,7 +146,7 @@ function Profile() {
             )}
           </div>
           <h3 className="mt-3">{userData.username || "My Profile"}</h3>
-          <p className="text-muted">{userData.email}</p>
+          <p className="text-secondary">{userData.email}</p>
         </div>
 
         {/* Form */}
@@ -207,7 +207,7 @@ function Profile() {
                 )}
               </>
             ) : (
-              <p className="text-muted">{userData.bio || "No bio provided."}</p>
+              <p className="text-secondary">{userData.bio || "No bio provided."}</p>
             )}
           </div>
         </div>

@@ -1,12 +1,37 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from "framer-motion";
 import Icon from '@mdi/react';
 import { mdiInformationSlabCircleOutline } from '@mdi/js';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import PublishedTable from './PublishedTable';
+import UnpublishedTable from './UnpublishedTable';
+import DraftTable from './DraftTable';
 
 function PaymentPage() {
 
     const [activeTab , setActiveTab] = useState("published")
+
+    const paymentList = async () => {
+        console.log("object")
+        try {
+          const response = await axios.get(
+            `http://localhost:8180/api/payment/get`,
+            { withCredentials: true }
+          );
+          console.log("res", response)
+        } catch (err) {
+        //   setError("Failed to fetch profile data.");
+          console.error(err);
+        } finally {
+        //   setLoading(false);
+        }
+      };
+    
+      useEffect(() => {
+        paymentList();
+      }, []);
+
     return (
         <>
             <motion.div
@@ -15,7 +40,7 @@ function PaymentPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
             >
-                <div className="bg-dark text-white min-vh-100 p-4">
+                <div className="bg-dark text-white min-vh-100 p-4 pb-0">
                     <div className="row">
                         <div className="col-md-12 text-end">
                             <Link to="/createpayment">
@@ -64,6 +89,11 @@ function PaymentPage() {
                         </div>
                         
                     </div>
+                    {
+                        activeTab === "published" && <PublishedTable /> ||
+                        activeTab === "unpublished" && <UnpublishedTable /> ||
+                        activeTab === "draft" && <DraftTable />
+                    }
                 </div>
 
             </motion.div>
