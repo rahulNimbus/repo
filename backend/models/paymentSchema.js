@@ -19,5 +19,5 @@ const paymentSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: "Users" },
 });
 
-const User = mongoose.model("Payments", paymentSchema);
-module.exports = User;
+const PaymentSchema = mongoose.model("Payments", paymentSchema);
+module.exports = PaymentSchema;

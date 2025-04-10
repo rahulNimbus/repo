@@ -12,6 +12,9 @@ const userSchema = new Schema({
     default: "user",
     enum: ["user", "admin"],
   },
+  headers: {
+    balance: { type: Number, default: 0 },
+  },
 });
 const User = mongoose.model("User", userSchema);
 module.exports = User;
