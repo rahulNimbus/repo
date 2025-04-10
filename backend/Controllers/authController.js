@@ -6,7 +6,11 @@ const { genToken } = require("../middlewares/handleToken");
 const User = require("../models/user/userSchema");
 const bcrypt = require("bcrypt");
 const { default: mongoose } = require("mongoose");
-const { capitalize, checkEmail } = require("../utils/CommonFunctions");
+const {
+  capitalize,
+  checkEmail,
+  checkPassword,
+} = require("../utils/CommonFunctions");
 
 const cookieOptions = {
   expires: new Date(Date.now() + 3600000),
@@ -42,6 +46,13 @@ exports.register = [
 
       if (user) {
         return res.status(400).json({ message: "Email already registered" });
+      }
+
+      if (!checkPassword(password)) {
+        return res.status(400).json({
+          message:
+            "Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character and no whitespace.",
+        });
       }
 
       if (password !== confirmPassword) {
@@ -191,6 +202,14 @@ exports.update = [
         if (!bcrypt.compareSync(oldPassword, user.password)) {
           return res.status(400).json({ message: "Invalid old password" });
         }
+
+        if (!checkPassword(password)) {
+          return res.status(400).json({
+            message:
+              "Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character and no whitespace.",
+          });
+        }
+
         if (password !== confirmPassword) {
           return res.status(400).json({ message: "Passwords do not match" });
         }
