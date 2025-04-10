@@ -3,12 +3,12 @@ const { verifyToken } = require("../middlewares/handleToken");
 const {
   createPayment,
   getPayment,
-  updatePayment,
+  payPayment,
 } = require("../Controllers/Payment/PaymentController");
 const router = express.Router();
 
 router.post("/create", verifyToken, createPayment);
 router.get("/get/:id?", verifyToken, getPayment);
-router.put("/update/:id?", verifyToken, updatePayment);
+router.put("/pay/:id?", verifyToken, payPayment);
 
 module.exports = router;

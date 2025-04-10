@@ -8,6 +8,22 @@ exports.checkEmail = (email) => {
   return regex.test(email);
 };
 
+exports.checkPassword = (password) => {
+  // Conditions for a password to be valid
+  //  6+ Characters
+  //  At least one uppercase letter
+  //  At least one lowercase letter
+  //  At least one number
+  //  At least one special character
+  //  No whitespace
+
+  // Sample Password following all the conditions
+  //  Password123!
+
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[\S]{6,}$/;
+  return regex.test(password);
+};
+
 exports.checkDigit = ({ number, decimalAllowed = false }) => {
   if (number === null || number === undefined) return false;
   if (typeof number !== "number" && typeof number !== "string") return false;

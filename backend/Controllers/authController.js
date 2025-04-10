@@ -6,7 +6,11 @@ const { genToken } = require("../middlewares/handleToken");
 const User = require("../models/user/userSchema");
 const bcrypt = require("bcrypt");
 const { default: mongoose } = require("mongoose");
-const { capitalize, checkEmail } = require("../utils/CommonFunctions");
+const {
+  capitalize,
+  checkEmail,
+  checkPassword,
+} = require("../utils/CommonFunctions");
 
 const cookieOptions = {
   expires: new Date(Date.now() + 3600000),
@@ -42,6 +46,13 @@ exports.register = [
 
       if (user) {
         return res.status(400).json({ message: "Email already registered" });
+      }
+
+      if (!checkPassword(password)) {
+        return res.status(400).json({
+          message:
+            "Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character and no whitespace.",
+        });
       }
 
       if (password !== confirmPassword) {
@@ -164,15 +175,39 @@ exports.update = [
   handleMulterErrors,
   async (req, res) => {
     try {
-      const user = await User.findById(req.user.id);
+      const userId = req.body.id;
+      if (!userId) {
+        return res.status(400).json({ message: "User id is required" });
+      }
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: "Invalid user id" });
+      }
+
+      // The user should either be the admin or the user himself to update the data.
+
+      if (
+        req.user.id.toString() !== userId.toString() &&
+        req.user.role !== "admin"
+      ) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      const user = await User.findById(userId);
       if (!user) {
         return res.status(400).json({ message: "User not found" });
       }
-      const { username, bio, password, confirmPassword, oldPassword, email } =
-        req.body;
+      const {
+        username,
+        bio,
+        password,
+        confirmPassword,
+        oldPassword,
+        email,
+        role,
+      } = req.body;
       if (username) {
         user.username = username;
       }
+
       if (bio) {
         user.bio = bio;
       }
@@ -191,6 +226,14 @@ exports.update = [
         if (!bcrypt.compareSync(oldPassword, user.password)) {
           return res.status(400).json({ message: "Invalid old password" });
         }
+
+        if (!checkPassword(password)) {
+          return res.status(400).json({
+            message:
+              "Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character and no whitespace.",
+          });
+        }
+
         if (password !== confirmPassword) {
           return res.status(400).json({ message: "Passwords do not match" });
         }
@@ -200,10 +243,10 @@ exports.update = [
         }
       }
 
-      if (!checkEmail(email))
-        return res.status(400).json({ message: "Invalid email" });
-
       if (email) {
+        if (!checkEmail(email))
+          return res.status(400).json({ message: "Invalid email" });
+
         const existingUser = await User.findOne({ email });
         if (
           existingUser &&
@@ -218,7 +261,24 @@ exports.update = [
       if (req.file) {
         user.avatar = req.file.path;
       }
+
+      if (role) {
+        if (req.user.role !== "admin") {
+          return res.status(401).json({ message: "Unauthorized" });
+        }
+        if (role !== "user" && role !== "admin") {
+          return res.status(400).json({
+            message: "Invalid role. Role can only be 'user' or 'admin'.",
+          });
+        }
+        user.role = role;
+      }
+
       await user.save();
+
+      const token = genToken(user);
+
+      res.cookie("token", token, cookieOptions);
       res.status(200).json({
         message: `User updated successfully`,
       });

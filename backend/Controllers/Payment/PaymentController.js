@@ -6,6 +6,7 @@ const { checkDigit, checkEmail } = require("../../utils/CommonFunctions");
 const { requiredFields } = require("../../utils/requiredFields");
 const PaymentSchema = require("../../models/paymentSchema");
 const { default: mongoose } = require("mongoose");
+const User = require("../../models/user/userSchema");
 
 exports.createPayment = [
   paymentMulter.array("media", 5),
@@ -97,7 +98,7 @@ exports.getPayment = async (req, res) => {
   }
 };
 
-exports.updatePayment = async (req, res) => {
+exports.payPayment = async (req, res) => {
   try {
     let id = req.body.id;
     let payment;
@@ -118,6 +119,9 @@ exports.updatePayment = async (req, res) => {
     let { enabled, customer } = req.body;
 
     if (enabled?.toString()) {
+      if (payment.user.toString() !== req.user.id.toString()) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
       payment.enabled = Boolean(enabled);
     } else if (payment.enabled) {
       if (!requiredFields(req, res, ["customer"])) return;
@@ -162,24 +166,28 @@ exports.updatePayment = async (req, res) => {
           .json({ message: "Please enter a valid 10 digit phone number" });
       }
 
-      const isCustomerExists = payment.customer.some(
+      const existingCustomer = payment.customer.filter(
         (c) => c.email === customer.email
-      );
+      )[0];
 
-      if (isCustomerExists) {
-        payment.customer = payment.customer.map((c) => {
-          if (c.email === customer.email) {
-            return {
-              name: customer.name,
-              email: customer.email,
-              phone: customer.phone,
-              status: customer.status,
-            };
-          }
-          return c;
-        });
+      if (existingCustomer) {
+        if (existingCustomer.status === 1) {
+          return res.status(400).json({ message: "Customer already paid" });
+        }
+        existingCustomer.status = customer.status;
+        existingCustomer.name = customer.name;
+        existingCustomer.phone = customer.phone;
+        existingCustomer.email = customer.email;
+        payment.customer = payment.customer.map((e) =>
+          e._id?.toString() === customer._id?.toString() ? existingCustomer : e
+        );
       } else {
         payment.customer.push(customer);
+      }
+      if (customer.status === 1) {
+        const user = await User.findById(payment.user);
+        user.headers.balance += payment.amount;
+        await user.save();
       }
     } else {
       return res.status(400).json({ message: "Payment is disabled" });
