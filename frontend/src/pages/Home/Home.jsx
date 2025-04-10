@@ -2,12 +2,38 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import PublishedTable from "../PaymentPage/PublishedTable";
 
 function Home() {
   const [userData, setUserData] = useState({});
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
+  const [paymentData, setPaymentData] = useState([]);
+  const fetchPaymentData = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `http://localhost:8180/api/payment/get`,
+        { withCredentials: true }
+      );
+      console.log("res", response);
+      if (response.status === 200) {
+        setPaymentData(response.data);
+      }
+    } catch (err) {
+      //   setError("Failed to fetch profile data.");
+      console.error(err);
+      setPaymentData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPaymentData();
+  }, []);
 
   console.log("local", localStorage.getItem("user"))
 
@@ -54,7 +80,7 @@ function Home() {
             <div className="row d-flex justify-content-start gap-5 text-center mb-4" >
               <div className="col-sm-3">
                 <p className="text-start">Total Revenue</p>
-                <h4 className="text-start">$ 5.122,50</h4>
+                <h4 className="text-start">₹ {loading ? "--" : paymentData.totalRevenue || 0}</h4>
               </div>
               <div className="col-sm-3">
                 <p className="text-start">Total Withdrawal</p>
@@ -65,7 +91,7 @@ function Home() {
                 <h4 className="text-start">= $ 122,50</h4>
               </div>
             </div>
-            <table className="table table-dark table-bordered text-center" >
+            {/* <table className="table table-dark table-bordered text-center" >
               <thead>
                 <tr >
                   <th style={{ width: '140px' }}>Date</th>
@@ -98,7 +124,8 @@ function Home() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table> */}
+            <PublishedTable data = {paymentData} loading = {loading} />
           </div>
 
           {/* Withdraw / Refund Section */}

@@ -82,20 +82,25 @@ function Profile() {
       formData.append("username", formValues.username);
       formData.append("bio", formValues.bio || "");
       formData.append("email", formValues.email);
+      if (
+        formValues.oldPassword != "" &&
+        formValues.oldPassword !="" &&
+        formValues.newPassword !=""
+      ) {
+        formData.append("password", formValues.password);
+        formData.append("oldPassword", formValues.oldPassword);
+        formData.append("confirmPassword", formValues.confirmPassword);
+      }
       if (avatarFile) {
         formData.append("avatar", avatarFile);
       }
 
-      await axios.put(
-        "http://localhost:8180/api/auth/update",
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      await axios.put("http://localhost:8180/api/auth/update", formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       await fetchProfile();
       setEditing(false);
@@ -111,7 +116,7 @@ function Profile() {
 
   return (
     <motion.div
-    className="bg-dark"
+      className="bg-dark"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
@@ -207,9 +212,69 @@ function Profile() {
                 )}
               </>
             ) : (
-              <p className="text-secondary">{userData.bio || "No bio provided."}</p>
+              <p className="text-secondary">
+                {userData.bio || "No bio provided."}
+              </p>
             )}
           </div>
+
+          {editing && (
+            <>
+              <div className="col-md-4 mb-3">
+                <label className="form-label">Old Password</label>
+                <input
+                  type="password"
+                  name="oldPassword"
+                  value={formValues.oldPassword || ""}
+                  onChange={handleChange}
+                  className="form-control bg-dark text-light border-secondary shadow-sm"
+                />
+                {formErrors.email && (
+                  <small className="text-danger">
+                    {formErrors.oldPassword}
+                  </small>
+                )}
+              </div>
+            </>
+          )}
+          {editing && (
+            <>
+              <div className="col-md-4 mb-3">
+                <label className="form-label">New Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formValues.password || ""}
+                  onChange={handleChange}
+                  className="form-control bg-dark text-light border-secondary shadow-sm"
+                />
+                {formErrors.email && (
+                  <small className="text-danger">
+                    {formErrors.newPassword}
+                  </small>
+                )}
+              </div>
+            </>
+          )}
+          {editing && (
+            <>
+              <div className="col-md-4 mb-3">
+                <label className="form-label">Confirm New Password</label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={formValues.confirmPassword || ""}
+                  onChange={handleChange}
+                  className="form-control bg-dark text-light border-secondary shadow-sm"
+                />
+                {formErrors.email && (
+                  <small className="text-danger">
+                    {formErrors.confirmPassword}
+                  </small>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Buttons */}

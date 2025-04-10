@@ -1,47 +1,60 @@
-import React from "react";
+import React, { useState } from "react";
 
-function PublishedTable() {
+const PublishedTable = ({ data, loading }) => {
+  let tableData = data?.payment || [];
+  console.log("hello", loading);
   return (
     <>
-    <div className="p-5 pb-0 pt-0 row">
-      <div className="table-responsive">
-       
-        <table className="table table-dark table-bordered text-center">
-          <thead>
-            <tr>
-              <th >Date</th>
-              <th>Customer Detail</th>
-              <th >Product</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {[1, 2, 3].map((item, index) => (
-              <tr key={index}>
-                <td >23 March 2025, 12:00</td>
-                <td>
-                  Name Mobile Number
-                </td>
-                <td >
-                  {index === 0
-                    ? "Payment Page\nName Of Page"
-                    : index === 1
-                    ? "Telegram Subscription"
-                    : "Locked Content"}
-                </td>
-                <td>
-                  1000
-                  <br />
-                  Successful / Failed
-                </td>
+      <div className="p-5 pb-0 pt-0 row">
+        <div className="table-responsive">
+          <table className="table table-dark table-bordered text-center">
+            <thead>
+              <tr>
+                <th>title</th>
+                <th>Price</th>
+                <th>Sale</th>
+                <th>Revenue</th>
+                <th>Payments</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan="5" className="text-center py-4">
+                    <div className="spinner-border text-white" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : tableData.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="text-center text-white py-4">
+                    No records found
+                  </td>
+                </tr>
+              ) : (
+                tableData.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.title}</td>
+                    <td>₹ {item.amount}</td>
+                    <td>{item.customer.length}</td>
+                    <td>₹ {item.customer.length * item.amount}</td>
+                    <td>
+                      {item.enabled ? (
+                        <span className="text-success">Enabled</span>
+                      ) : (
+                        <span className="text-danger">Disabled</span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );
-}
+};
 
 export default PublishedTable;
