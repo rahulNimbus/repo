@@ -181,12 +181,13 @@ exports.payPayment = async (req, res) => {
         payment.customer = payment.customer.map((e) =>
           e._id?.toString() === customer._id?.toString() ? existingCustomer : e
         );
-
+      } else {
+        payment.customer.push(customer);
+      }
+      if (customer.status === 1) {
         const user = await User.findById(payment.user);
         user.headers.balance += payment.amount;
         await user.save();
-      } else {
-        payment.customer.push(customer);
       }
     } else {
       return res.status(400).json({ message: "Payment is disabled" });
