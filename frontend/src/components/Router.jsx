@@ -8,6 +8,7 @@ import CreatePost from "../pages/CreatePost";
 import Layout from "./Layout";
 import PaymentPage from "../pages/PaymentPage/PaymentPage";
 import CreatePaymentPage from "../pages/PaymentPage/CreatePaymentPage";
+import PaymentViewPage from "../pages/PaymentPage/PaymentViewPage";
 
 function Router() {
   const location = useLocation();
@@ -19,7 +20,6 @@ function Router() {
       ? setIsAuthPage(true)
       : setIsAuthPage(false);
   }, [location.pathname]);
-
 
   return (
     // <>
@@ -34,20 +34,21 @@ function Router() {
     // </>
 
     <>
-      <Layout >
+      <Layout>
         <Routes>
-
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/create" element={<CreatePost />} />
           <Route path="/post/:id" element={<PostDetails />} />
-          <Route path="/paymentspage" element={<PaymentPage />} />
+          <Route path="/paymentspage">
+            <Route index element={<PaymentPage />} />
+            <Route path=":id" element={<PaymentViewPage />} />
+          </Route>
           <Route path="/createpayment" element={<CreatePaymentPage />} />
 
           <Route path="/auth" element={<LoginResgister />} />
         </Routes>
       </Layout>
-
     </>
   );
 }

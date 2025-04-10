@@ -1,11 +1,11 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const PublishedTable = ({ data, loading }) => {
   let tableData = data?.payment || [];
-  console.log("hello", loading);
   return (
     <>
-      <div className="p-5 pb-0 pt-0 row">
+      <div className="p-2 pb-0 pt-0 row">
         <div className="table-responsive">
           <table className="table table-dark table-bordered text-center">
             <thead>
@@ -35,7 +35,7 @@ const PublishedTable = ({ data, loading }) => {
               ) : (
                 tableData.map((item, index) => (
                   <tr key={index}>
-                    <td>{item.title}</td>
+                    <td><Link to={`/paymentspage/${item._id}`}>{item.title}</Link></td>
                     <td>₹ {item.amount}</td>
                     <td>{item.customer.length}</td>
                     <td>₹ {item.customer.length * item.amount}</td>
