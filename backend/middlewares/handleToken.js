@@ -11,6 +11,7 @@ const genToken = (user) => {
           username: user.username,
           email: user.email,
           avatar: user.avatar,
+          role: user.role,
         },
       },
       JWT_SECRET_KEY,

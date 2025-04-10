@@ -14,6 +14,19 @@ const userSchema = new Schema({
   },
   headers: {
     balance: { type: Number, default: 0 },
+    withdrawal: [
+      {
+        amount: { type: Number, default: 0 },
+        status: {
+          type: String,
+          default: "pending",
+          enum: ["pending", "success", "failure"],
+        },
+        created: { type: Date, default: Date.now },
+        updated: { type: Date, default: Date.now },
+        description: { type: String, default: "" },
+      },
+    ],
   },
 });
 const User = mongoose.model("User", userSchema);

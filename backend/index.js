@@ -26,11 +26,13 @@ mongoose
 
 const authRoutes = require("./routes/authRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const walletRoutes = require("./routes/walletRoutes");
 
 app.use("/api/uploads", express.static("uploads"));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/wallet", walletRoutes);
 
 app.use("*", (req, res) => {
   res.status(404).json({ message: "Page not found" });
