@@ -168,7 +168,8 @@ exports.update = [
       if (!user) {
         return res.status(400).json({ message: "User not found" });
       }
-      const { username, bio, password, confirmPassword, email } = req.body;
+      const { username, bio, password, confirmPassword, oldPassword, email } =
+        req.body;
       if (username) {
         user.username = username;
       }
@@ -177,10 +178,18 @@ exports.update = [
       }
 
       if (password) {
+        if (!oldPassword) {
+          return res
+            .status(400)
+            .json({ message: "Old Password is also required." });
+        }
         if (!confirmPassword) {
           return res
             .status(400)
             .json({ message: "Confirm Password is also required." });
+        }
+        if (!bcrypt.compareSync(oldPassword, user.password)) {
+          return res.status(400).json({ message: "Invalid old password" });
         }
         if (password !== confirmPassword) {
           return res.status(400).json({ message: "Passwords do not match" });
