@@ -107,7 +107,7 @@ function LoginRegister() {
       if (response.status === 200) {
         localStorage.setItem("user", response.data.user.id);
         setSuccessMessage(response.data.message || `${type} successful!`);
-        navigate("/");
+        navigate("/dash");
         setFormValues({});
         setErrors({});
         e.target.reset();

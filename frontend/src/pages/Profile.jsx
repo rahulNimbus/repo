@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
+import defaultAvatar from "../assets/panda.png";
 
 function Profile() {
   const [userData, setUserData] = useState({});
@@ -82,8 +83,9 @@ function Profile() {
       formData.append("username", formValues.username);
       formData.append("bio", formValues.bio || "");
       formData.append("email", formValues.email);
+      formData.append("id", formValues._id);
       if (
-        formValues.oldPassword != "" &&
+        formValues.password != "" &&
         formValues.oldPassword !="" &&
         formValues.newPassword !=""
       ) {
@@ -126,7 +128,7 @@ function Profile() {
         <div className="text-center mb-4">
           <div className="position-relative d-inline-block">
             <img
-              src={avatarPreview || "https://via.placeholder.com/150"}
+              src={avatarPreview || defaultAvatar}
               alt="avatar"
               className="rounded-circle border border-light"
               style={{

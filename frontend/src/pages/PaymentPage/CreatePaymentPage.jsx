@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import Icon from "@mdi/react";
 import { mdiFolderArrowUpOutline } from "@mdi/js";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const CreatePaymentPage = () => {
   const [title, setTitle] = useState("");
@@ -60,6 +61,8 @@ const CreatePaymentPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -86,7 +89,8 @@ const CreatePaymentPage = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-
+      
+      navigate("/paymentspage");
       alert("Payment page created successfully!");
     } catch (err) {
       console.log(err);

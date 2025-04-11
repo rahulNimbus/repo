@@ -1,11 +1,10 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import { Children } from "react";
 
 const Layout = ({ children }) => {
     const location = useLocation();
-    const hideLayout = ["/auth"].includes(location.pathname);
+    const hideLayout = "/" == (location.pathname);
 
     return (
         // <div className="layout">

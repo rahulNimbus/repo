@@ -16,9 +16,8 @@ function Router() {
   const [isAuthPage, setIsAuthPage] = useState(false);
 
   useEffect(() => {
-    location.pathname.includes("/auth")
-      ? setIsAuthPage(true)
-      : setIsAuthPage(false);
+    console.log("location", location.pathname=='/');
+    location.pathname == "/" ? setIsAuthPage(true) : setIsAuthPage(false);
   }, [location.pathname]);
 
   return (
@@ -36,7 +35,7 @@ function Router() {
     <>
       <Layout>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/dash" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/create" element={<CreatePost />} />
           <Route path="/post/:id" element={<PostDetails />} />
@@ -46,7 +45,7 @@ function Router() {
           </Route>
           <Route path="/createpayment" element={<CreatePaymentPage />} />
 
-          <Route path="/auth" element={<LoginResgister />} />
+          <Route path="/" element={<LoginResgister />} />
         </Routes>
       </Layout>
     </>
