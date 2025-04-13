@@ -147,6 +147,12 @@ exports.payPayment = async (req, res) => {
         });
       }
 
+      if (!customer.name || !customer.email || !customer.phone) {
+        return res.status(400).json({
+          error:
+            "Customer must be a valid object with fields name, email and phone.",
+        });
+      }
       if (
         customer.name.trim() === "" ||
         customer.email.trim() === "" ||
@@ -157,7 +163,6 @@ exports.payPayment = async (req, res) => {
           error: "Customer name, email phone and status cannot be empty.",
         });
       }
-
       if (
         !customer.status?.toString() ||
         (Number(customer.status) !== 0 && Number(customer.status) !== 1)
@@ -167,7 +172,7 @@ exports.payPayment = async (req, res) => {
             "Please enter a valid status, either 0 for unpaid or 1 for paid",
         });
       }
-
+      customer.status = customer.status?.toString();
       if (
         customer.phone.length !== 10 ||
         !checkDigit({ number: customer.phone, decimalAllowed: false })
