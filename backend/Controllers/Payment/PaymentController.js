@@ -147,6 +147,12 @@ exports.payPayment = async (req, res) => {
         });
       }
 
+      if (!customer.name || !customer.email || !customer.phone) {
+        return res.status(400).json({
+          error:
+            "Customer must be a valid object with fields name, email and phone.",
+        });
+      }
       if (
         customer.name.trim() === "" ||
         customer.email.trim() === "" ||
