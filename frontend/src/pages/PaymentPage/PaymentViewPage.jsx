@@ -12,6 +12,7 @@ function PaymentViewPage() {
     name: "",
     email: "",
     phone: "",
+    status: "0",
   });
 
   const [errors, setErrors] = useState({});
@@ -36,17 +37,34 @@ function PaymentViewPage() {
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
-    alert("Checkout info submitted!");
-    // Submit data logic here
+    const payload = {
+      id: id,
+      customer: formData,
+    };
+    
 
-    console.log("Submitted:", formData);
-    // Reset if needed:
-    // setFormData({ name: "", email: "", phone: "" });
+    try {
+      const response = await axios.post(
+        `http://localhost:8180/api/payment/pay`,
+        payload,
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log(response);
+
+      alert("Checkout info submitted!");
+      setFormData({ name: "", email: "", phone: "" });
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+
   };
 
   const handleChange = (e) => {
@@ -81,11 +99,14 @@ function PaymentViewPage() {
   return (
     <div className="bg-dark text-white p-5  min-vh-100">
       <div className="row h-100">
-
         <div className="col-md-6 border-end border-secondary">
           <h3 className="text-white mb-4">Checkout</h3>
 
-          <form onSubmit={handleSubmit} className="p-0" style={{ alignItems: "normal" }}>
+          <form
+            onSubmit={handleSubmit}
+            className="p-0"
+            style={{ alignItems: "normal" }}
+          >
             {/* Name */}
             <div className="mb-3 position-relative">
               <label className="form-label" style={{ color: "#bbbbbb" }}>
@@ -175,71 +196,87 @@ function PaymentViewPage() {
             className="border border-secondary p-3 rounded"
             style={{ backgroundColor: "#1e1e1e", color: "#e0e0e0" }}
           >
-            <div className="d-flex justify-content-between">
-              <h5>{paymentData?.title}</h5>
-            </div>
-
-            <small style={{ color: "#bbbbbb" }}>ABOUT THE PAGE</small>
-            <p>Amount: {paymentData?.amount?.toLocaleString()}</p>
-            <p>Description: {paymentData?.description}</p>
-            <div className="mt-2">
-              Status:{" "}
-              {paymentData?.enabled ? (
-                <span className="text-success fw-bold">Enabled</span>
-              ) : (
-                <span className="text-danger fw-bold">Disabled</span>
-              )}
-            </div>
-            <div className="text-secondary my-3" style={{ fontSize: "0.9rem" }}>
-              Created at: {new Date(paymentData?.createdAt)?.toLocaleString()}
-            </div>
-
-            {paymentData?.media?.length > 0 ? (
-              <div className="mb-4 text-center d-flex flex-wrap justify-content-center gap-3">
-                {paymentData.media.map((url, index) => {
-                  const isVideo = /\.(mp4|webm|ogg)$/i.test(url);
-
-                  return isVideo ? (
-                    <video
-                      key={index}
-                      controls
-                      className="rounded-3 border border-secondary"
-                      style={{
-                        maxHeight: "150px",
-                        maxWidth: "100%",
-                        width: "260px",
-                      }}
-                    >
-                      <source src={url} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                  ) : (
-                    <img
-                      key={index}
-                      src={url}
-                      alt={`media-${index}`}
-                      className="img-fluid rounded-3 border border-secondary"
-                      style={{
-                        maxHeight: "150px",
-                        objectFit: "cover",
-                        width: "260px",
-                      }}
-                      onError={(e) => {
-                        e.target.src = defaultAvatar; // fallback
-                      }}
-                    />
-                  );
-                })}
-              </div>
+            {loading ? (
+              <>
+                <div className="text-center mt-5 mb-5">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </>
             ) : (
-              <div className="mb-4 text-center">
-                <img
-                  src={defaultAvatar}
-                  alt="Default media"
-                  className="img-fluid rounded-3"
-                  style={{ maxHeight: "250px", objectFit: "cover" }}
-                />
-              </div>
+              <>
+                <div className="d-flex justify-content-between">
+                  <h5>{paymentData?.title}</h5>
+                </div>
+
+                <small style={{ color: "#bbbbbb" }}>ABOUT THE PAGE</small>
+                <p>Amount: {paymentData?.amount?.toLocaleString()}</p>
+                <p>Description: {paymentData?.description}</p>
+                <div className="mt-2">
+                  Status:{" "}
+                  {paymentData?.enabled ? (
+                    <span className="text-success fw-bold">Enabled</span>
+                  ) : (
+                    <span className="text-danger fw-bold">Disabled</span>
+                  )}
+                </div>
+                <div
+                  className="text-secondary my-3"
+                  style={{ fontSize: "0.9rem" }}
+                >
+                  Created at:{" "}
+                  {new Date(paymentData?.createdAt)?.toLocaleString()}
+                </div>
+
+                {paymentData?.media?.length > 0 ? (
+                  <div className="mb-4 text-center d-flex flex-wrap justify-content-center gap-3">
+                    {paymentData.media.map((url, index) => {
+                      const isVideo = /\.(mp4|webm|ogg)$/i.test(url);
+
+                      return isVideo ? (
+                        <video
+                          key={index}
+                          controls
+                          className="rounded-3 border border-secondary"
+                          style={{
+                            maxHeight: "150px",
+                            maxWidth: "100%",
+                            width: "260px",
+                          }}
+                        >
+                          <source src={url} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
+                      ) : (
+                        <img
+                          key={index}
+                          src={url}
+                          alt={`media-${index}`}
+                          className="img-fluid rounded-3 border border-secondary"
+                          style={{
+                            maxHeight: "150px",
+                            objectFit: "cover",
+                            width: "260px",
+                          }}
+                          onError={(e) => {
+                            e.target.src = defaultAvatar; // fallback
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="mb-4 text-center">
+                    <img
+                      src={defaultAvatar}
+                      alt="Default media"
+                      className="img-fluid rounded-3"
+                      style={{ maxHeight: "250px", objectFit: "cover" }}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

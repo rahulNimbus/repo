@@ -62,8 +62,6 @@ function Home() {
       if (response.status === 200) {
         setWithdrawData(
           response.data.withdrawals
-            ?.map((e) => ({ ...e, created: new Date(e.created).getTime() }))
-            .sort((a, b) => b.created - a.created)
         );
       }
     } catch (err) {
