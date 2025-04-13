@@ -69,10 +69,21 @@ exports.getPayment = async (req, res) => {
     if (!payment) {
       return res.status(404).json({ message: "Payment not found" });
     }
+    const updatedPayments = payment.map((e) => ({
+      ...e.toObject(),
+      media: e.media.map(
+        (curr) =>
+          req.protocol +
+          "://" +
+          req.get("host") +
+          "/api/" +
+          curr.replaceAll("\\", "/")
+      ),
+    }));
 
     const payload = {
       count: payment.length,
-      payment: payment,
+      payment: updatedPayments,
     };
     if (!id) {
       const totalSales = payment
