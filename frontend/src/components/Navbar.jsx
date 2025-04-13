@@ -32,7 +32,7 @@ function Navbar() {
 
 
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark text-white position-fixed top-0 end-0 start-0" style={{ zIndex: 1500 , maxHeight: '56px' , overflow: 'hidden' }}>
-      <div className="d-flex align-items-center justify-content-evenly w-100">
+      <div className="mt-2 d-flex align-items-center justify-content-evenly w-100">
 
         <h2>Dashboard</h2>
         <div className="flex-grow-5">

@@ -18,7 +18,7 @@ const Sidebar = () => {
         </button> */}
         <nav>
           <ul>
-            <li style={{ width: "max-content" }}><Link to="/">🏠 {isOpen && "Dashboard"}</Link></li>
+            <li style={{ width: "max-content" }}><Link to="/dash">🏠 {isOpen && "Dashboard"}</Link></li>
             <li style={{ width: "max-content" }}><Link to="/profile">👤 {isOpen && "Profile"}</Link></li>
             <li style={{ width: "max-content" }}><Link to="/paymentspage">📝 {isOpen && "Payments Page"}</Link></li>
           </ul>
