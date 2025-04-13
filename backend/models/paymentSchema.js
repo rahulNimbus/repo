@@ -6,7 +6,7 @@ const paymentSchema = new Schema({
   title: String,
   description: { type: String },
   amount: { type: Number },
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Number, default: () => Date.now() },
   customer: [
     {
       name: String,
