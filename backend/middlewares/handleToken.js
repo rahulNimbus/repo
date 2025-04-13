@@ -32,7 +32,7 @@ const verifyToken = async (req, res, next) => {
     if (!token) {
       return res
         .status(401)
-        .json({ message: "Access Denied. No token provided." });
+        .json({ error: "Access Denied. No token provided." });
     }
 
     const decoded = jwt.verify(token, JWT_SECRET_KEY);
@@ -41,14 +41,14 @@ const verifyToken = async (req, res, next) => {
     const user = await User.findById(req.user.id);
     if (!user) {
       res.clearCookie("token");
-      return res.status(401).json({ message: "User no longer exists" });
+      return res.status(401).json({ error: "User no longer exists" });
     }
 
     next();
   } catch (err) {
     console.error("JWT Verification Error:", err.message);
     res.clearCookie("token");
-    return res.status(401).json({ message: "Invalid or expired token" });
+    return res.status(401).json({ error: "Invalid or expired token" });
   }
 };
 

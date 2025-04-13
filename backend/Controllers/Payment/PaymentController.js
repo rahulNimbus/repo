@@ -20,17 +20,17 @@ exports.createPayment = [
       if (!req.files?.map((file) => file.path).length) {
         return res
           .status(400)
-          .json({ message: "Please upload at least one file" });
+          .json({ error: "Please upload at least one file" });
       }
 
       if (req.files?.map((file) => file.path).length > 5) {
         return res
           .status(400)
-          .json({ message: "Please upload at most 5 files" });
+          .json({ error: "Please upload at most 5 files" });
       }
 
       if (!checkDigit({ number: req.body.amount, decimalAllowed: true })) {
-        return res.status(400).json({ message: "Please enter a valid amount" });
+        return res.status(400).json({ error: "Please enter a valid amount" });
       }
 
       const payment = new PaymentSchema({
@@ -48,7 +48,7 @@ exports.createPayment = [
       });
     } catch (error) {
       console.error(error);
-      res.status(500).send("Internal Server Error");
+      res.status(500).send({ error: "Internal Server Error" });
     }
   },
 ];
@@ -59,7 +59,7 @@ exports.getPayment = async (req, res) => {
     let payment;
     if (id) {
       if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ message: "Invalid ID" });
+        return res.status(400).json({ error: "Invalid ID" });
       }
       payment = await PaymentSchema.find({ _id: id });
     } else {
@@ -67,7 +67,7 @@ exports.getPayment = async (req, res) => {
     }
 
     if (!payment) {
-      return res.status(404).json({ message: "Payment not found" });
+      return res.status(404).json({ error: "Payment not found" });
     }
     const updatedPayments = payment.map((e) => ({
       ...e.toObject(),
@@ -105,7 +105,7 @@ exports.getPayment = async (req, res) => {
     res.json(payload);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send({ error: "Internal Server Error" });
   }
 };
 
@@ -115,23 +115,23 @@ exports.payPayment = async (req, res) => {
     let payment;
 
     if (!id) {
-      return res.status(400).json({ message: "Please provide an ID" });
+      return res.status(400).json({ error: "Please provide an ID" });
     }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid ID" });
+      return res.status(400).json({ error: "Invalid ID" });
     }
     payment = await PaymentSchema.findById(id);
 
     if (!payment) {
-      return res.status(404).json({ message: "Payment not found" });
+      return res.status(404).json({ error: "Payment not found" });
     }
 
     let { enabled, customer } = req.body;
 
     if (enabled?.toString()) {
       if (payment.user.toString() !== req.user.id.toString()) {
-        return res.status(403).json({ message: "Forbidden" });
+        return res.status(403).json({ error: "Forbidden" });
       }
       payment.enabled = Boolean(enabled);
     } else if (payment.enabled) {
@@ -163,23 +163,19 @@ exports.payPayment = async (req, res) => {
           error: "Customer name, email phone and status cannot be empty.",
         });
       }
-      if (
-        !customer.status?.toString() ||
-        (Number(customer.status) !== 0 && Number(customer.status) !== 1)
-      ) {
+      if (Number(customer.status) !== 0 && Number(customer.status) !== 1) {
         return res.status(400).json({
-          message:
+          error:
             "Please enter a valid status, either 0 for unpaid or 1 for paid",
         });
       }
-      customer.status = customer.status?.toString();
       if (
         customer.phone.length !== 10 ||
         !checkDigit({ number: customer.phone, decimalAllowed: false })
       ) {
         return res
           .status(400)
-          .json({ message: "Please enter a valid 10 digit phone number" });
+          .json({ error: "Please enter a valid 10 digit phone number" });
       }
 
       const existingCustomer = payment.customer.filter(
@@ -188,7 +184,7 @@ exports.payPayment = async (req, res) => {
 
       if (existingCustomer) {
         if (existingCustomer.status === 1) {
-          return res.status(400).json({ message: "Customer already paid" });
+          return res.status(400).json({ error: "Customer already paid" });
         }
         existingCustomer.status = customer.status;
         existingCustomer.name = customer.name;
@@ -200,13 +196,13 @@ exports.payPayment = async (req, res) => {
       } else {
         payment.customer.push(customer);
       }
-      if (customer.status === 1) {
+      if (customer.status === "1") {
         const user = await User.findById(payment.user);
         user.headers.balance += payment.amount;
         await user.save();
       }
     } else {
-      return res.status(400).json({ message: "Payment is disabled" });
+      return res.status(400).json({ error: "Payment is disabled" });
     }
     await payment.save();
 
@@ -216,6 +212,6 @@ exports.payPayment = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send({ error: "Internal Server Error" });
   }
 };
