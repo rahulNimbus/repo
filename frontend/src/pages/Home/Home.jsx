@@ -20,7 +20,7 @@ function Home() {
         setUserData(response.data.user);
       } catch (err) {
         console.log(err);
-      }finally {
+      } finally {
         setLoading(false);
       }
     };
@@ -28,9 +28,6 @@ function Home() {
     fetchUserData();
   }, []);
 
-
-
-  
   const [paymentData, setPaymentData] = useState([]);
   const fetchPaymentData = async () => {
     setLoading(true);
@@ -63,7 +60,11 @@ function Home() {
       );
       console.log("res", response);
       if (response.status === 200) {
-        setWithdrawData(response.data.withdrawals);
+        setWithdrawData(
+          response.data.withdrawals
+            ?.map((e) => ({ ...e, created: new Date(e.created).getTime() }))
+            .sort((a, b) => b.created - a.created)
+        );
       }
     } catch (err) {
       //   setError("Failed to fetch profile data.");
@@ -152,7 +153,9 @@ function Home() {
               </div>
               <div className="col-sm-3">
                 <p className="text-start">Balance Amount</p>
-                <h4 className="text-start">₹ {loading ? "--" : userData?.headers?.balance || 0}</h4>
+                <h4 className="text-start">
+                  ₹ {loading ? "--" : userData?.headers?.balance || 0}
+                </h4>
               </div>
             </div>
             <PublishedTable data={paymentData} loading={loading} />
@@ -176,60 +179,70 @@ function Home() {
             </div>
 
             {/* Cards */}
-            { withdrawDataLoading ? (<><div className="text-center mt-5 mb-5"><div className="spinner-border text-primary" role="status"><span className="visually-hidden">Loading...</span></div></div></>) : (withdrawData.map((data, index) => (
-              <div
-                key={index}
-                className="border border-secondary text-white p-3 rounded mb-3 d-flex justify-content-between align-items-center mx-4"
-              >
-                <div className="d-flex align-items-center gap-3">
-                  <div
-                    style={{
-                      backgroundColor: "#a259ff",
-                      borderRadius: "50%",
-                      width: "50px",
-                      height: "50px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "20px",
-                    }}
-                  >
-                    💰
-                  </div>
-                  <div>
-                    <h6 className="mb-1">₹ {data.amount}</h6>
-                    <small>{data.description}</small>
+            {withdrawDataLoading ? (
+              <>
+                <div className="text-center mt-5 mb-5">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
                   </div>
                 </div>
-                <span className="d-flex flex-column">
-                  <small
-                    className={`text-${
-                      data.status == "success" ? "success" : "warning"
-                    }`}
-                  >
-                    {data.status == "success" ? (
-                      "Successfull"
-                    ) : data.status == "failure" ? (
-                      <span className="text-danger">Failed</span>
-                    ) : (
-                      <span>
-                        <small>Pending </small>
-                        <small
-                          onClick={()=>handleApprove(data._id)}
-                          className="text-primary"
-                        >
-                          Approve
-                        </small>
-                      </span>
-                    )}
-                  </small>
-                  <small className="text-white">
-                    {/* May 4th, 2020 */}
-                    {formatRawDate(data.created)}
-                  </small>
-                </span>
-              </div>
-            )))}
+              </>
+            ) : (
+              withdrawData.map((data, index) => (
+                <div
+                  key={index}
+                  className="border border-secondary text-white p-3 rounded mb-3 d-flex justify-content-between align-items-center mx-4"
+                >
+                  <div className="d-flex align-items-center gap-3">
+                    <div
+                      style={{
+                        backgroundColor: "#a259ff",
+                        borderRadius: "50%",
+                        width: "50px",
+                        height: "50px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "20px",
+                      }}
+                    >
+                      💰
+                    </div>
+                    <div>
+                      <h6 className="mb-1">₹ {data.amount}</h6>
+                      <small>{data.description}</small>
+                    </div>
+                  </div>
+                  <span className="d-flex flex-column">
+                    <small
+                      className={`text-${
+                        data.status == "success" ? "success" : "warning"
+                      }`}
+                    >
+                      {data.status == "success" ? (
+                        "Successfull"
+                      ) : data.status == "failure" ? (
+                        <span className="text-danger">Failed</span>
+                      ) : (
+                        <span>
+                          <small>Pending </small>
+                          <small
+                            onClick={() => handleApprove(data._id)}
+                            className="text-primary"
+                          >
+                            Approve
+                          </small>
+                        </span>
+                      )}
+                    </small>
+                    <small className="text-white">
+                      {/* May 4th, 2020 */}
+                      {formatRawDate(data.created)}
+                    </small>
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
