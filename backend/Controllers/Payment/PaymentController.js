@@ -187,7 +187,7 @@ exports.payPayment = async (req, res) => {
       )[0];
 
       if (existingCustomer) {
-        if (existingCustomer.status === 1) {
+        if (existingCustomer.status === "1") {
           return res.status(400).json({ message: "Customer already paid" });
         }
         existingCustomer.status = customer.status;
