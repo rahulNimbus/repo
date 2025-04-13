@@ -200,7 +200,7 @@ exports.payPayment = async (req, res) => {
       } else {
         payment.customer.push(customer);
       }
-      if (customer.status === 1) {
+      if (customer.status === "1") {
         const user = await User.findById(payment.user);
         user.headers.balance += payment.amount;
         await user.save();
