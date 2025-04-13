@@ -94,7 +94,7 @@ const CreatePaymentPage = () => {
       alert("Payment page created successfully!");
     } catch (err) {
       console.log(err);
-      alert("Failed to create Payment page");
+      alert(err.response.data.error);
     }
   };
 

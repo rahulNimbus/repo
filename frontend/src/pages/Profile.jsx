@@ -109,7 +109,7 @@ function Profile() {
       setAvatarFile(null);
       setFormErrors({});
     } catch (err) {
-      alert("Failed to update profile.");
+      alert(err.response.data.error);
     }
   };
 

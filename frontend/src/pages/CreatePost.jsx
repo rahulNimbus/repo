@@ -71,7 +71,7 @@ function CreatePost() {
       setMediaPreview(null);
       fileInputRef.current.value = "";
     } catch (err) {
-      alert("Error creating post.");
+      alert(err.response.data.error);
     }
   };
 

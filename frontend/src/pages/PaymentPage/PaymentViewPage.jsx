@@ -12,7 +12,6 @@ function PaymentViewPage() {
     name: "",
     email: "",
     phone: "",
-    status: "0",
   });
 
   const [errors, setErrors] = useState({});
@@ -44,12 +43,11 @@ function PaymentViewPage() {
 
     const payload = {
       id: id,
-      customer: formData,
+      customer: { ...formData, id: "0" },
     };
-    
 
     try {
-      const response = await axios.post(
+      const response = await axios.put(
         `http://localhost:8180/api/payment/pay`,
         payload,
         {
@@ -57,14 +55,13 @@ function PaymentViewPage() {
         }
       );
 
-      console.log(response);
-
+      console.log("response", response);
       alert("Checkout info submitted!");
       setFormData({ name: "", email: "", phone: "" });
     } catch (error) {
-      alert(error.response.data.message);
+      alert(error.response.data.error);
+      // console.log(error.response.data.error)
     }
-
   };
 
   const handleChange = (e) => {
