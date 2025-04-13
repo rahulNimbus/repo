@@ -163,31 +163,28 @@ exports.payPayment = async (req, res) => {
           error: "Customer name, email phone and status cannot be empty.",
         });
       }
-      if (
-        !customer.status?.toString() ||
-        (Number(customer.status) !== 0 && Number(customer.status) !== 1)
-      ) {
+      if (Number(customer.status) !== 0 && Number(customer.status) !== 1) {
         return res.status(400).json({
           message:
-            "Please enter a valid status, either 0 for unpaid or 1 for paid",
+          "Please enter a valid status, either 0 for unpaid or 1 for paid",
         });
       }
-      customer.status = customer.status?.toString();
+      console.log(typeof customer.status);
       if (
         customer.phone.length !== 10 ||
         !checkDigit({ number: customer.phone, decimalAllowed: false })
       ) {
         return res
-          .status(400)
+        .status(400)
           .json({ message: "Please enter a valid 10 digit phone number" });
-      }
-
-      const existingCustomer = payment.customer.filter(
-        (c) => c.email === customer.email
-      )[0];
-
-      if (existingCustomer) {
-        if (existingCustomer.status === "1") {
+        }
+        
+        const existingCustomer = payment.customer.filter(
+          (c) => c.email === customer.email
+        )[0];
+        
+        if (existingCustomer) {
+          if (existingCustomer.status === 1) { 
           return res.status(400).json({ message: "Customer already paid" });
         }
         existingCustomer.status = customer.status;
