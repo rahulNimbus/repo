@@ -157,6 +157,9 @@ exports.getData = [
             newUser.avatar.replaceAll("\\", "/")
         );
       }
+      newUser.headers.withdrawal = newUser.headers.withdrawal?.sort(
+        (a, b) => b.created - a.created
+      );
 
       res.status(200).json({
         user: newUser,

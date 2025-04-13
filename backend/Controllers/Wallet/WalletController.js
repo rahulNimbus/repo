@@ -31,7 +31,9 @@ exports.getWithdrawal = async (req, res) => {
         .select("headers.withdrawal")
         .lean();
 
-      const withdrawals = user?.headers?.withdrawal || [];
+      const withdrawals = (user?.headers?.withdrawal || [])?.sort(
+        (a, b) => b.created - a.created
+      );
 
       return res.status(200).json({
         count: withdrawals.length,
