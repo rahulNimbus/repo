@@ -7,7 +7,7 @@ exports.getWithdrawal = async (req, res) => {
 
     if (withdrawalID) {
       if (!mongoose.Types.ObjectId.isValid(withdrawalID)) {
-        return res.status(400).json({ message: "Invalid withdrawal ID" });
+        return res.status(400).json({ error: "Invalid withdrawal ID" });
       }
 
       const user = await User.findOne(
@@ -19,7 +19,7 @@ exports.getWithdrawal = async (req, res) => {
       ).lean();
 
       if (!user || !user.headers.withdrawal.length) {
-        return res.status(404).json({ message: "Withdrawal not found" });
+        return res.status(404).json({ error: "Withdrawal not found" });
       }
 
       return res.status(200).json({
@@ -42,7 +42,7 @@ exports.getWithdrawal = async (req, res) => {
     }
   } catch (err) {
     console.error("Error in getWithdrawal:", err);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ error: "Internal Server error" });
   }
 };
 
@@ -51,22 +51,22 @@ exports.initiateWithdrawal = async (req, res) => {
     const { amount, description } = req.body;
 
     if (!amount || isNaN(amount)) {
-      return res.status(400).json({ message: "Invalid withdrawal amount" });
+      return res.status(400).json({ error: "Invalid withdrawal amount" });
     }
 
     const user = await User.findById(req.user.id);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ error: "User not found" });
     }
 
     if (amount == 0) {
       return res
         .status(400)
-        .json({ message: "Amount should be greater than 0." });
+        .json({ error: "Amount should be greater than 0." });
     }
 
     if (user.headers.balance < amount) {
-      return res.status(400).json({ message: "Insufficient balance" });
+      return res.status(400).json({ error: "Insufficient balance" });
     }
 
     const newWithdrawal = {
@@ -86,7 +86,7 @@ exports.initiateWithdrawal = async (req, res) => {
     });
   } catch (error) {
     console.error("Error initiating withdrawal:", error);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ error: "Internal Server error" });
   }
 };
 
@@ -96,30 +96,30 @@ exports.approveWithdrawal = async (req, res) => {
     const { status } = req.body;
 
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid withdrawal ID" });
+      return res.status(400).json({ error: "Invalid withdrawal ID" });
     }
 
     if (status !== "success" && status !== "failure") {
       return res.status(400).json({
-        message: "Invalid status. It can either be success or failure",
+        error: "Invalid status. It can either be success or failure",
       });
     }
 
     // Step 1: Get user first
     const user = await User.findById(req.user.id).lean();
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ error: "User not found" });
 
     const withdrawal = user.headers.withdrawal.find(
       (w) => w._id.toString() === id
     );
 
     if (!withdrawal)
-      return res.status(404).json({ message: "Withdrawal not found" });
+      return res.status(404).json({ error: "Withdrawal not found" });
 
     if (withdrawal.status != "pending") {
       return res
         .status(400)
-        .json({ message: "Withdrawal already approved/failed", withdrawal });
+        .json({ error: "Withdrawal already approved/failed", withdrawal });
     }
     const amount = withdrawal.amount;
     const currentBalance = user.headers.balance;
@@ -147,7 +147,7 @@ exports.approveWithdrawal = async (req, res) => {
     ).lean();
 
     if (!updatedUser || !updatedUser.headers.withdrawal.length) {
-      return res.status(404).json({ message: "Withdrawal not found" });
+      return res.status(404).json({ error: "Withdrawal not found" });
     }
 
     return res.status(200).json({
@@ -161,6 +161,6 @@ exports.approveWithdrawal = async (req, res) => {
     });
   } catch (error) {
     console.error("Error approving withdrawal:", error);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ error: "Internal Server error" });
   }
 };

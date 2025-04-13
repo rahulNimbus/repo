@@ -37,15 +37,15 @@ exports.register = [
       }
 
       // if (!req.file) {
-      //   return res.status(400).json({ message: "Please upload an avatar" });
+      //   return res.status(400).json({ error: "Please upload an avatar" });
       // }
       if (!checkEmail(email))
-        return res.status(400).json({ message: "Invalid email" });
+        return res.status(400).json({ error: "Invalid email" });
 
       const user = await User.findOne({ email });
 
       if (user) {
-        return res.status(400).json({ message: "Email already registered" });
+        return res.status(400).json({ error: "Email already registered" });
       }
 
       if (!checkPassword(password)) {
@@ -56,7 +56,7 @@ exports.register = [
       }
 
       if (password !== confirmPassword) {
-        return res.status(400).json({ message: "Passwords do not match" });
+        return res.status(400).json({ error: "Passwords do not match" });
       }
 
       const newUser = await User.create({
@@ -100,13 +100,13 @@ exports.login = [
       const user = await User.findOne({ email });
 
       if (!user) {
-        return res.status(401).json({ message: "Invalid email or password" });
+        return res.status(401).json({ error: "Invalid email or password" });
       }
 
       const isMatch = bcrypt.compareSync(password, user.password);
 
       if (!isMatch) {
-        return res.status(401).json({ message: "Invalid email or password" });
+        return res.status(401).json({ error: "Invalid email or password" });
       }
 
       const token = genToken(user);
@@ -139,12 +139,12 @@ exports.getData = [
 
       const userId = req.user.id;
       if (!userId) {
-        return res.status(400).json({ message: "User id is required" });
+        return res.status(400).json({ error: "User id is required" });
       }
 
       const user = await User.findById(req.user.id).select("-password");
       if (!user) {
-        return res.status(400).json({ message: "User not found" });
+        return res.status(400).json({ error: "User not found" });
       }
 
       const newUser = JSON.parse(JSON.stringify(user));
@@ -180,10 +180,10 @@ exports.update = [
     try {
       const userId = req.body.id;
       if (!userId) {
-        return res.status(400).json({ message: "User id is required" });
+        return res.status(400).json({ error: "User id is required" });
       }
       if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ message: "Invalid user id" });
+        return res.status(400).json({ error: "Invalid user id" });
       }
 
       // The user should either be the admin or the user himself to update the data.
@@ -192,11 +192,11 @@ exports.update = [
         req.user.id.toString() !== userId.toString() &&
         req.user.role !== "admin"
       ) {
-        return res.status(401).json({ message: "Unauthorized" });
+        return res.status(401).json({ error: "Unauthorized" });
       }
       const user = await User.findById(userId);
       if (!user) {
-        return res.status(400).json({ message: "User not found" });
+        return res.status(400).json({ error: "User not found" });
       }
       const {
         username,
@@ -219,15 +219,15 @@ exports.update = [
         if (!oldPassword) {
           return res
             .status(400)
-            .json({ message: "Old Password is also required." });
+            .json({ error: "Old Password is also required." });
         }
         if (!confirmPassword) {
           return res
             .status(400)
-            .json({ message: "Confirm Password is also required." });
+            .json({ error: "Confirm Password is also required." });
         }
         if (!bcrypt.compareSync(oldPassword, user.password)) {
-          return res.status(400).json({ message: "Invalid old password" });
+          return res.status(400).json({ error: "Invalid old password" });
         }
 
         if (!checkPassword(password)) {
@@ -238,7 +238,7 @@ exports.update = [
         }
 
         if (password !== confirmPassword) {
-          return res.status(400).json({ message: "Passwords do not match" });
+          return res.status(400).json({ error: "Passwords do not match" });
         }
 
         if (confirmPassword && password === confirmPassword) {
@@ -248,14 +248,14 @@ exports.update = [
 
       if (email) {
         if (!checkEmail(email))
-          return res.status(400).json({ message: "Invalid email" });
+          return res.status(400).json({ error: "Invalid email" });
 
         const existingUser = await User.findOne({ email });
         if (
           existingUser &&
           existingUser._id.toString() !== user._id.toString()
         ) {
-          return res.status(400).json({ message: "Email already registered" });
+          return res.status(400).json({ error: "Email already registered" });
         }
 
         user.email = email;
@@ -267,11 +267,11 @@ exports.update = [
 
       if (role) {
         if (req.user.role !== "admin") {
-          return res.status(401).json({ message: "Unauthorized" });
+          return res.status(401).json({ error: "Unauthorized" });
         }
         if (role !== "user" && role !== "admin") {
           return res.status(400).json({
-            message: "Invalid role. Role can only be 'user' or 'admin'.",
+            error: "Invalid role. Role can only be 'user' or 'admin'.",
           });
         }
         user.role = role;
