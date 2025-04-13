@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { Link, useNavigate } from "react-router-dom";
-import Icon from '@mdi/react';
-import { mdiForumOutline } from '@mdi/js';
 import axios from "axios";
 
 function Navbar() {
@@ -18,9 +16,7 @@ function Navbar() {
         );
         setUserData(response.data.user);
       } catch (err) {
-        // setError("Failed to fetch user data. Please try again later.");
-      } finally {
-        // setLoading(false);
+        console.log(err);
       }
     };
 
