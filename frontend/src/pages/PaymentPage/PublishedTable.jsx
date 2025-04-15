@@ -15,12 +15,13 @@ const PublishedTable = ({ data, loading }) => {
                 <th>Sale</th>
                 <th>Revenue</th>
                 <th>Payments</th>
+                <th>Checkout</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="5" className="text-center py-4">
+                  <td colSpan="6" className="text-center py-4">
                     <div className="spinner-border text-white" role="status">
                       <span className="visually-hidden">Loading...</span>
                     </div>
@@ -28,7 +29,7 @@ const PublishedTable = ({ data, loading }) => {
                 </tr>
               ) : tableData.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="text-center text-white py-4">
+                  <td colSpan="6" className="text-center text-white py-4">
                     No records found
                   </td>
                 </tr>
@@ -46,6 +47,7 @@ const PublishedTable = ({ data, loading }) => {
                         <span className="text-danger">Disabled</span>
                       )}
                     </td>
+                    <td><Link to={`/checkout/${item._id}`}>Link</Link></td>
                   </tr>
                 ))
               )}

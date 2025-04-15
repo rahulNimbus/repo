@@ -8,42 +8,16 @@ function PaymentViewPage() {
 
   const [loading, setLoading] = useState(false);
   const [paymentData, setPaymentData] = useState([]);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
+  
 
-  const [errors, setErrors] = useState({});
 
-  const validateForm = () => {
-    const errs = {};
 
-    if (!formData.name.trim()) errs.name = "Name is required.";
-    if (!formData.email.trim()) {
-      errs.email = "Email is required.";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errs.email = "Invalid email format.";
-    }
-
-    if (!formData.phone.trim()) {
-      errs.phone = "Phone number is required.";
-    } else if (!/^\d{10}$/.test(formData.phone)) {
-      errs.phone = "Enter a valid 10-digit phone number.";
-    }
-
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
+  const handleChangeStatus = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
-
     const payload = {
-      id: id,
-      customer: { ...formData, id: "0" },
+      "id": id,
+      "enabled": paymentData?.enabled ? false : true,
     };
 
     try {
@@ -56,18 +30,14 @@ function PaymentViewPage() {
       );
 
       console.log("response", response);
-      alert("Checkout info submitted!");
-      setFormData({ name: "", email: "", phone: "" });
+      alert("Status changed successfully!");
+      fetchPaymentData();
     } catch (error) {
       alert(error.response.data.error);
-      // console.log(error.response.data.error)
     }
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" });
-  };
+  
 
   const fetchPaymentData = async () => {
     setLoading(true);
@@ -95,16 +65,15 @@ function PaymentViewPage() {
 
   return (
     <div className="bg-dark text-white p-5  min-vh-100">
-      <div className="row h-100">
-        <div className="col-md-6 border-end border-secondary">
-          <h3 className="text-white mb-4">Checkout</h3>
+      <div className="row h-100 p-5">
+        {/* <div className="col-md-6 border-end border-secondary">
+          <h3 className="text-white mb-4">Payment Information</h3>
 
           <form
             onSubmit={handleSubmit}
             className="p-0"
             style={{ alignItems: "normal" }}
           >
-            {/* Name */}
             <div className="mb-3 position-relative">
               <label className="form-label" style={{ color: "#bbbbbb" }}>
                 Name
@@ -113,6 +82,7 @@ function PaymentViewPage() {
                 type="text"
                 name="name"
                 className="form-control pe-5"
+                disabled={!paymentData?.enabled}
                 style={{
                   backgroundColor: "#1e1e1e",
                   color: "#ffffff",
@@ -128,7 +98,6 @@ function PaymentViewPage() {
               )}
             </div>
 
-            {/* Email */}
             <div className="mb-3 position-relative">
               <label className="form-label" style={{ color: "#bbbbbb" }}>
                 Email
@@ -136,6 +105,7 @@ function PaymentViewPage() {
               <input
                 type="email"
                 name="email"
+                disabled={!paymentData?.enabled}
                 className="form-control pe-5"
                 style={{
                   backgroundColor: "#1e1e1e",
@@ -151,7 +121,6 @@ function PaymentViewPage() {
               )}
             </div>
 
-            {/* Phone */}
             <div className="mb-3 position-relative">
               <label className="form-label" style={{ color: "#bbbbbb" }}>
                 Phone Number
@@ -159,6 +128,7 @@ function PaymentViewPage() {
               <input
                 type="tel"
                 name="phone"
+                disabled={!paymentData?.enabled}
                 className="form-control pe-5"
                 style={{
                   backgroundColor: "#1e1e1e",
@@ -174,109 +144,121 @@ function PaymentViewPage() {
               )}
             </div>
 
-            {/* Submit */}
             <div className="row">
               <div className="col-md-12 text-end">
                 <button
                   type="submit"
                   className="btn btn-secondary px-4 rounded-pill"
+                  disabled={!paymentData?.enabled}
                 >
                   Save and Continue
                 </button>
               </div>
             </div>
           </form>
-        </div>
+          {!paymentData?.enabled && (
+            <div className="text-center mt-4 text-danger">
+              We're no longer accepting payments.
+            </div>
+          )}
+        </div> */}
 
-        <div className="col-md-6">
-          <div
-            className="border border-secondary p-3 rounded"
-            style={{ backgroundColor: "#1e1e1e", color: "#e0e0e0" }}
-          >
-            {loading ? (
-              <>
-                <div className="text-center mt-5 mb-5">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="d-flex justify-content-between">
-                  <h5>{paymentData?.title}</h5>
-                </div>
+        <h3 className="text-white mb-4">Payment Information</h3>
+        {loading ? (
+          <>
+            <div className="text-center mt-5 mb-5">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="col-md-6">
+              <div className="d-flex justify-content-between">
+                <h5>Title : {paymentData?.title}</h5>
+              </div>
 
-                <small style={{ color: "#bbbbbb" }}>ABOUT THE PAGE</small>
-                <p>Amount: {paymentData?.amount?.toLocaleString()}</p>
-                <p>Description: {paymentData?.description}</p>
-                <div className="mt-2">
-                  Status:{" "}
-                  {paymentData?.enabled ? (
+              <small style={{ color: "#bbbbbb" }}>ABOUT THE PAGE</small>
+              <p>Amount: {paymentData?.amount?.toLocaleString()}</p>
+              <p>Description: {paymentData?.description}</p>
+              <div className="mt-2">
+                Status:{" "}
+                {paymentData?.enabled ? (
+                  <>
                     <span className="text-success fw-bold">Enabled</span>
-                  ) : (
-                    <span className="text-danger fw-bold">Disabled</span>
-                  )}
-                </div>
-                <div
-                  className="text-secondary my-3"
-                  style={{ fontSize: "0.9rem" }}
-                >
-                  Created at:{" "}
-                  {new Date(paymentData?.createdAt)?.toLocaleString()}
-                </div>
-
-                {paymentData?.media?.length > 0 ? (
-                  <div className="mb-4 text-center d-flex flex-wrap justify-content-center gap-3">
-                    {paymentData.media.map((url, index) => {
-                      const isVideo = /\.(mp4|webm|ogg)$/i.test(url);
-
-                      return isVideo ? (
-                        <video
-                          key={index}
-                          controls
-                          className="rounded-3 border border-secondary"
-                          style={{
-                            maxHeight: "150px",
-                            maxWidth: "100%",
-                            width: "260px",
-                          }}
-                        >
-                          <source src={url} type="video/mp4" />
-                          Your browser does not support the video tag.
-                        </video>
-                      ) : (
-                        <img
-                          key={index}
-                          src={url}
-                          alt={`media-${index}`}
-                          className="img-fluid rounded-3 border border-secondary"
-                          style={{
-                            maxHeight: "150px",
-                            objectFit: "cover",
-                            width: "260px",
-                          }}
-                          onError={(e) => {
-                            e.target.src = defaultAvatar; // fallback
-                          }}
-                        />
-                      );
-                    })}
-                  </div>
+                    <button onClick={handleChangeStatus} className="btn btn-sm btn-secondary ms-4">
+                      Change Status
+                    </button>
+                  </>
                 ) : (
-                  <div className="mb-4 text-center">
-                    <img
-                      src={defaultAvatar}
-                      alt="Default media"
-                      className="img-fluid rounded-3"
-                      style={{ maxHeight: "250px", objectFit: "cover" }}
-                    />
-                  </div>
+                  <>
+                    <span className="text-danger fw-bold">Disabled</span>
+                    <button onClick={handleChangeStatus} className="btn btn-sm btn-secondary ms-4">
+                      Change Status
+                    </button>
+                  </>
                 )}
-              </>
-            )}
-          </div>
-        </div>
+              </div>
+              <div
+                className="text-secondary my-3"
+                style={{ fontSize: "0.9rem" }}
+              >
+                Created at: {new Date(paymentData?.createdAt)?.toLocaleString()}
+              </div>
+            </div>
+
+            <div className="col-md-6 border-start border-secondary">
+              {paymentData?.media?.length > 0 ? (
+                <div className="mb-4 text-center d-flex flex-wrap justify-content-center gap-3">
+                  {paymentData.media.map((url, index) => {
+                    const isVideo = /\.(mp4|webm|ogg)$/i.test(url);
+
+                    return isVideo ? (
+                      <video
+                        key={index}
+                        controls
+                        className="rounded-3 border border-secondary"
+                        style={{
+                          maxHeight: "200px",
+                          maxWidth: "100%",
+                          width: "350px",
+                        }}
+                      >
+                        <source src={url} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                    ) : (
+                      <img
+                        key={index}
+                        src={url}
+                        alt={`media-${index}`}
+                        className="img-fluid rounded-3 border border-secondary"
+                        style={{
+                          maxHeight: "200px",
+                          objectFit: "cover",
+                          width: "350px",
+                        }}
+                        onError={(e) => {
+                          e.target.src = defaultAvatar; // fallback
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="mb-4 text-center">
+                  <img
+                    src={defaultAvatar}
+                    alt="Default media"
+                    className="img-fluid rounded-3"
+                    style={{ maxHeight: "250px", objectFit: "cover" }}
+                  />
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -47,6 +47,28 @@ function Profile() {
     ) {
       errors.email = "Please enter a valid email address.";
     }
+
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[\S]{6,}$/;
+
+    if (formValues.password || formValues.confirmPassword) {
+      if (!formValues.oldPassword) {
+        errors.oldPassword = "Old password is required.";
+      }
+
+      if (!formValues.password) {
+        errors.password = "New password is required.";
+      } else if (!regex.test(formValues.password)) {
+        errors.password =
+          "Password must be at least 6 characters, include upper and lowercase letters, a number, and a special character.";
+      }
+
+      if (!formValues.confirmPassword) {
+        errors.confirmPassword = "Please confirm your new password.";
+      } else if (formValues.confirmPassword !== formValues.password) {
+        errors.confirmPassword = "Passwords do not match.";
+      }
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -85,9 +107,9 @@ function Profile() {
       formData.append("email", formValues.email);
       formData.append("id", formValues._id);
       if (
-        formValues.password != "" &&
-        formValues.oldPassword !="" &&
-        formValues.newPassword !=""
+        formValues.password &&
+        formValues.oldPassword &&
+        formValues.newPassword
       ) {
         formData.append("password", formValues.password);
         formData.append("oldPassword", formValues.oldPassword);
@@ -221,6 +243,55 @@ function Profile() {
           </div>
 
           {editing && (
+            // <>
+            //   <div className="col-md-4 mb-3">
+            //     <label className="form-label">Old Password</label>
+            //     <input
+            //       type="password"
+            //       name="oldPassword"
+            //       value={formValues.oldPassword || ""}
+            //       onChange={handleChange}
+            //       className="form-control bg-dark text-light border-secondary shadow-sm"
+            //     />
+            //     {formErrors.email && (
+            //       <small className="text-danger">
+            //         {formErrors.oldPassword}
+            //       </small>
+            //     )}
+            //   </div>
+
+            //   <div className="col-md-4 mb-3">
+            //     <label className="form-label">New Password</label>
+            //     <input
+            //       type="password"
+            //       name="password"
+            //       value={formValues.password || ""}
+            //       onChange={handleChange}
+            //       className="form-control bg-dark text-light border-secondary shadow-sm"
+            //     />
+            //     {formErrors.email && (
+            //       <small className="text-danger">
+            //         {formErrors.newPassword}
+            //       </small>
+            //     )}
+            //   </div>
+
+            //   <div className="col-md-4 mb-3">
+            //     <label className="form-label">Confirm New Password</label>
+            //     <input
+            //       type="password"
+            //       name="confirmPassword"
+            //       value={formValues.confirmPassword || ""}
+            //       onChange={handleChange}
+            //       className="form-control bg-dark text-light border-secondary shadow-sm"
+            //     />
+            //     {formErrors.email && (
+            //       <small className="text-danger">
+            //         {formErrors.confirmPassword}
+            //       </small>
+            //     )}
+            //   </div>
+            // </>
             <>
               <div className="col-md-4 mb-3">
                 <label className="form-label">Old Password</label>
@@ -231,16 +302,13 @@ function Profile() {
                   onChange={handleChange}
                   className="form-control bg-dark text-light border-secondary shadow-sm"
                 />
-                {formErrors.email && (
+                {formErrors.oldPassword && (
                   <small className="text-danger">
                     {formErrors.oldPassword}
                   </small>
                 )}
               </div>
-            </>
-          )}
-          {editing && (
-            <>
+
               <div className="col-md-4 mb-3">
                 <label className="form-label">New Password</label>
                 <input
@@ -250,16 +318,11 @@ function Profile() {
                   onChange={handleChange}
                   className="form-control bg-dark text-light border-secondary shadow-sm"
                 />
-                {formErrors.email && (
-                  <small className="text-danger">
-                    {formErrors.newPassword}
-                  </small>
+                {formErrors.password && (
+                  <small className="text-danger">{formErrors.password}</small>
                 )}
               </div>
-            </>
-          )}
-          {editing && (
-            <>
+
               <div className="col-md-4 mb-3">
                 <label className="form-label">Confirm New Password</label>
                 <input
@@ -269,7 +332,7 @@ function Profile() {
                   onChange={handleChange}
                   className="form-control bg-dark text-light border-secondary shadow-sm"
                 />
-                {formErrors.email && (
+                {formErrors.confirmPassword && (
                   <small className="text-danger">
                     {formErrors.confirmPassword}
                   </small>

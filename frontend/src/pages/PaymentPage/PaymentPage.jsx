@@ -82,7 +82,7 @@ function PaymentPage() {
                 <Icon path={mdiInformationSlabCircleOutline} size={0.8} />
               </p>
               <div className="d-inline-flex align-items-center">
-                <h3 className="mb-0">{loading ? "--" : (paymentData.totalSales / (paymentData.notPaidCustomers + paymentData.totalSales)) * 100 || 0}%</h3>
+                <h3 className="mb-0">{loading ? "--" : ((paymentData.totalSales / (paymentData.notPaidCustomers + paymentData.totalSales)) * 100).toFixed(2) || 0}%</h3>
                 <small className="text-small ms-2">same as last week</small>
               </div>
             </div>

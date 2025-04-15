@@ -10,6 +10,7 @@ import PaymentPage from "../pages/PaymentPage/PaymentPage";
 import CreatePaymentPage from "../pages/PaymentPage/CreatePaymentPage";
 import PaymentViewPage from "../pages/PaymentPage/PaymentViewPage";
 import InitiateWithdraw from "../pages/Withdraw/InitiateWithdraw";
+import Checkout from "../pages/PaymentPage/Checkout";
 
 function Router() {
   const location = useLocation();
@@ -44,6 +45,7 @@ function Router() {
             <Route index element={<PaymentPage />} />
             <Route path=":id" element={<PaymentViewPage />} />
           </Route>
+          <Route path="/checkout/:id" element={<Checkout />} />
           <Route path="/createpayment" element={<CreatePaymentPage />} />
           <Route path="/withdraw" element={<InitiateWithdraw />} />
 

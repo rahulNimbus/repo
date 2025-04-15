@@ -47,7 +47,7 @@ function InitiateWithdraw() {
       setErrors({});
     } catch (error) {
       console.error("Withdraw request failed:", error.response.data.message);
-      alert(error.response.data.message);
+      alert(error.response.data.error);
     }
   };
 

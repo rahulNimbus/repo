@@ -36,8 +36,12 @@ function LoginRegister() {
         }
         break;
       case "password":
-        if (!value || value.length < 6) {
-          error = "Password must be at least 6 characters";
+        if (!value ) {
+          error = "Password is required";
+        }else if(!(/^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%*?&])[\S]{6,}$/.test(value))){
+
+          error = "Password must be at least 6 characters, include upper and lowercase letters, a number, and a special character.";
+
         }
         break;
       case "confirmPassword":
@@ -112,11 +116,13 @@ function LoginRegister() {
         setErrors({});
         e.target.reset();
       }
+
     } catch (error) {
+      console.log(error)
       setSuccessMessage("");
       setErrors({
         api:
-          error.response?.data?.error ||
+          error.response?.data?.message ||
           "Something went wrong. Please try again.",
       });
     }
@@ -278,7 +284,7 @@ function LoginRegister() {
                 )}
               </div>
 
-              <div className="input-field d-flex flex-column mb-3">
+              <div className="input-field d-flex flex-column mb-3" style={errors.password ? { marginTop: "30px" } : {}}>
                 <div
                   className="d-flex align-items-center"
                   style={{ paddingLeft: "10px" }}

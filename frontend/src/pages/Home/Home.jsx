@@ -88,7 +88,7 @@ function Home() {
       alert("Approved successfully");
       fetchWithdrawdata();
     } catch (error) {
-      alert(error.response.data.message);
+      alert(error.response.data.error);
     }
   };
 
@@ -163,7 +163,7 @@ function Home() {
           <div className="col-md-5 pt-3">
             <div className="d-flex mb-3 gap-3">
               <button
-                onClick={() => navigate("/withdraw")}
+                // onClick={() => navigate("/withdraw")}
                 className="btn btn-primary w-50"
               >
                 Withdraw
